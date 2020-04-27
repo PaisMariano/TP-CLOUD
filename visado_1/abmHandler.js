@@ -37,28 +37,37 @@ class AbmHandler {
         aTrack.duration = aDuration;
     }
 
-    deleteArtist(artistList, playlist, listened, anArtist){
+    deleteArtist(artistList, playlists, users, anArtist){
         anArtist.albums.forEach(elem =>{
-            playlist = playlist.filter(track => track.album.id !== elem.id);
-            listened = listened.filter(track => track.album.id !== elem.id);
+            playlists = playlists.forEach(pl => {
+                this.filterTracks(pl.tracks, elem.id)});
+            users = users.forEach(us => {|111111111111111111111111111111111111111111111111                this.filterTracks(us.listenedTracks, elem.id)});
         })        
         artistList = artistList.filter(art => art.id !== anArtist.id);
     }
 
-    deleteAlbum(artistList, playlist, listened, anAlbum){
-        playlist = playlist.filter(track => track.album.id !== anAlbum.id);
-        listened = listened.filter(track => track.album.id !== anAlbum.id);
+    deleteAlbum(artistList, playlists, users, anAlbum){
+        playlists = playlists.forEach(pl => {
+            this.filterTracks(pl.tracks, anAlbum.id)});
+        users = users.ForEach(us => {
+            this.filterTracks(us.listenedTracks, anAlbum.id)});
         artistList = artistList.filter(art => {
             art.album.filter(album => album.id !== anAlbum.id)});
     }
 
-    deleteTrack(artistList, playlist, listened, aTrack){
-        playlist = playlist.filter(track => track.id !== aTrack.id);
-        listened = listened.filter(track => track.id !== aTrack.id);
+    deleteTrack(artistList, playlists, users, aTrack){
+        playlists = playlists.forEach(pl => {
+            pl.tracks.filter(track => track.id !== aTrack.id)});
+        users = users.forEach(us => {
+            us.listenedTracks.filter(track => track.id !== aTrack.id)});
         artistList = artistList.filter(art => {
             art.albums.filter(album => {
                 album.filter(track => track.id !== aTrack.id)
             })
         });
+    }
+
+    filterTracks(tracks, id){
+        return tracks.listenedTracks.filter(track => track.album.id !== anAlbum.id);
     }
 }
