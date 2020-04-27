@@ -1,8 +1,8 @@
 
 const picklify = require('picklify'); // para cargar/guarfar unqfy
 const fs = require('fs'); // para cargar/guarfar unqfy
-require('abmHandler');
-
+const AbmHandler = require('./abmHandler.js');
+const Searcher   = require('./searcher.js');
 
 class UNQfy {
   constructor(){
@@ -15,43 +15,48 @@ class UNQfy {
 
   get artists(){return this._artists};
   get users(){return this._users};
-  get playlists(){return this._playlists};  
+  get playlists(){return this._playlists};
+   
 
   addArtist(artistData) {
-    let tempArtist = this._abmHandler.createArtist(artistData.name, artistData.country);
+    let tempArtist = this._abmHandler.createArtist( artistData.name, 
+                                                    artistData.country);
     this._artists.push(tempArtist);
     return tempArtist;
   }
 
   addAlbum(artistId, albumData) {
-    let tempArtist = getArtistById(artistId);
-    let tempAlbum  = this._abmHandler.
-      createAlbum(albumData.name, albumData.year, tempArtist);
+    let tempArtist = this.getArtistById(artistId);
+    let tempAlbum  = this._abmHandler.createAlbum(albumData.name, 
+                                                  albumData.year, 
+                                                  tempArtist);
     tempArtist.albums.push(tempAlbum);
     return tempAlbum;
   }
 
   addTrack(albumId, trackData) {
-    let tempAlbum = getAlbumById(albumId);
-    let tempTrack = this._abmHandler.
-      createTrack(trackData.name, trackData.genres, trackData.duration, tempAlbum);
-    tempAlbum.push(tempTrack);
+    let tempAlbum = this.getAlbumById(albumId);
+    let tempTrack = this._abmHandler.createTrack( trackData.name, 
+                                                  trackData.genres, 
+                                                  trackData.duration, 
+                                                  tempAlbum);
+    tempAlbum.tracks.push(tempTrack);
     return tempTrack;
   }
 
   removeArtist(artistId){
-    let tempArtist = getArtistById(artistId);
-    this._abmHandler.deleteArtist(this._artists, this._playlists, this._users, tempArtist);
+    let tempArtist = this.getArtistById(artistId);
+    this._artists = this._abmHandler.deleteArtist(this._artists, tempArtist);
   }
 
   removeAlbum(albumId){
-    let tempAlbum = getAlbumById(albumId);
-    this._abmHandler.deleteAlbum(this._artists, this._playlists, this._users, tempAlbum);
+    let tempAlbum = this.getAlbumById(albumId);
+    this._artists = this._abmHandler.deleteAlbum(this._artists, tempAlbum);
   }
 
   removeTrack(trackId){
-    let tempTrack = getTrackById(trackId);
-    this._abmHandler.deleteTrack(this._artists, this._playlists, this._users, tempTrack);
+    let tempTrack = this.getTrackById(trackId);
+    this._artists = this._abmHandler.deleteTrack(this._artists, tempTrack);
   }
 
   getArtistById(id) {return this._searcher.searchArtist(this._artists, id);}

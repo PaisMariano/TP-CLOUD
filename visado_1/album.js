@@ -11,5 +11,7 @@ class Album {
       get name(){return this._name};
       get year(){return this._year};
       get tracks(){return this._tracks};
+      set tracks(aList){return this._tracks = aList};
       get artist(){return this._artist};
 }
+module.exports = Album;

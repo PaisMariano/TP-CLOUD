@@ -1,3 +1,7 @@
+const Artist = require('./artist.js');
+const Album = require('./album.js');
+const Track = require('./track.js');
+
 class AbmHandler {
     constructor(){
         this._artistId  = 0;
@@ -11,15 +15,15 @@ class AbmHandler {
 
     createArtist(aName, aCountry){
         this._artistId = this._artistId + 1;
-        return new Artist(_artistId, aName, aCountry);
+        return new Artist(this._artistId, aName, aCountry);
     }
     createAlbum(aName, aYear, anArtist){
         this._albumId = this._albumId + 1;
-        return new Album(_albumId, aName, aYear, anArtist);
+        return new Album(this._albumId, aName, aYear, anArtist);
     }
     createTrack(aName, genres, aDuration, anAlbum){
         this._trackId = this._trackId + 1;
-        return new Track(_trackId, aName, genres, aDuration, anAlbum);
+        return new Track(this._trackId, aName, genres, aDuration, anAlbum);
     }
     updateArtist(anArtist, aName, aCountry){
         anArtist.name    = aName;
@@ -37,37 +41,25 @@ class AbmHandler {
         aTrack.duration = aDuration;
     }
 
-    deleteArtist(artistList, playlists, users, anArtist){
-        anArtist.albums.forEach(elem =>{
-            playlists = playlists.forEach(pl => {
-                this.filterTracks(pl.tracks, elem.id)});
-            users = users.forEach(us => {|111111111111111111111111111111111111111111111111                this.filterTracks(us.listenedTracks, elem.id)});
-        })        
-        artistList = artistList.filter(art => art.id !== anArtist.id);
+    deleteArtist(artistList, anArtist){ 
+        return artistList.filter(art => art.id !== anArtist.id);
     }
 
-    deleteAlbum(artistList, playlists, users, anAlbum){
-        playlists = playlists.forEach(pl => {
-            this.filterTracks(pl.tracks, anAlbum.id)});
-        users = users.ForEach(us => {
-            this.filterTracks(us.listenedTracks, anAlbum.id)});
-        artistList = artistList.filter(art => {
-            art.album.filter(album => album.id !== anAlbum.id)});
-    }
-
-    deleteTrack(artistList, playlists, users, aTrack){
-        playlists = playlists.forEach(pl => {
-            pl.tracks.filter(track => track.id !== aTrack.id)});
-        users = users.forEach(us => {
-            us.listenedTracks.filter(track => track.id !== aTrack.id)});
-        artistList = artistList.filter(art => {
-            art.albums.filter(album => {
-                album.filter(track => track.id !== aTrack.id)
-            })
+    deleteAlbum(artistList, anAlbum){
+        return artistList.map(art => {
+            art.albums = art.albums.filter(album => album.id !== anAlbum.id);
+            return art
         });
     }
-
-    filterTracks(tracks, id){
-        return tracks.listenedTracks.filter(track => track.album.id !== anAlbum.id);
-    }
+    deleteTrack(artistList, aTrack){
+        return artistList.map(art => {
+            art.albums = art.albums.map(album => {
+                album.tracks = album.tracks.filter(track => track.id !== aTrack.id);
+                return album;
+            })
+            return art;
+        });
+    }    
 }
+
+module.exports = AbmHandler;
