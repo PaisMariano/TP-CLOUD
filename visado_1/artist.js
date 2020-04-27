@@ -10,4 +10,7 @@ class Artist {
       get name(){return this._name};
       get country(){return this._country};
       get albums(){return this._albums};
+      set albums(aList){return this._albums = aList};
 }
+
+module.exports = Artist;

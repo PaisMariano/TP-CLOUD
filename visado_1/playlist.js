@@ -11,3 +11,4 @@ class Playlist {
       get duration(){return this._duration};
       get tracks(){return this._tracks};
 }
+module.exports = Playlist;

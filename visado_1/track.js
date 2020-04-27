@@ -13,3 +13,4 @@ class Track {
       get duration(){return this._duration};
       get album(){return this._album};
 }
+module.exports = Track;
