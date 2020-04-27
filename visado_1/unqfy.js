@@ -1,65 +1,49 @@
 
 const picklify = require('picklify'); // para cargar/guarfar unqfy
 const fs = require('fs'); // para cargar/guarfar unqfy
+require('abmHandler');
 
 
 class UNQfy {
+  constructor(){
+    this._artists     = [];
+    this._users       = [];
+    this._playlists   = [];
+    this._abmHandler  = new AbmHandler();
+    this._searcher    = new Searcher();
+  }
 
-  // artistData: objeto JS con los datos necesarios para crear un artista
-  //   artistData.name (string)
-  //   artistData.country (string)
-  // retorna: el nuevo artista creado
+  get artists(){return this._artists};
+  get users(){return this._users};
+  get playlists(){return this._playlists};  
+
   addArtist(artistData) {
-  /* Crea un artista y lo agrega a unqfy.
-  El objeto artista creado debe soportar (al menos):
-    - una propiedad name (string)
-    - una propiedad country (string)
-  */
+    let tempArtist = this._abmHandler.createArtist(artistData.name, artistData.country);
+    this._artists.push(tempArtist);
+    return tempArtist;
   }
 
-
-  // albumData: objeto JS con los datos necesarios para crear un album
-  //   albumData.name (string)
-  //   albumData.year (number)
-  // retorna: el nuevo album creado
   addAlbum(artistId, albumData) {
-  /* Crea un album y lo agrega al artista con id artistId.
-    El objeto album creado debe tener (al menos):
-     - una propiedad name (string)
-     - una propiedad year (number)
-  */
+    let tempArtist = getArtistById(artistId);
+    let tempAlbum  = this._abmHandler.
+      createAlbum(albumData.name, albumData.year, tempArtist);
+    tempArtist.albums.push(tempAlbum);
   }
 
-
-  // trackData: objeto JS con los datos necesarios para crear un track
-  //   trackData.name (string)
-  //   trackData.duration (number)
-  //   trackData.genres (lista de strings)
-  // retorna: el nuevo track creado
   addTrack(albumId, trackData) {
-  /* Crea un track y lo agrega al album con id albumId.
-  El objeto track creado debe tener (al menos):
-      - una propiedad name (string),
-      - una propiedad duration (number),
-      - una propiedad genres (lista de strings)
-  */
+    let tempAlbum = getAlbumById(albumId);
+    let tempTrack = this._abmHandler.
+      createTrack(trackData.name, trackData.genres, trackData.duration, tempAlbum);
+    tempAlbum.push(tempTrack);
   }
 
-  getArtistById(id) {
+  getArtistById(id) {return this._searcher.searchArtist(this._artists, id);}
 
-  }
+  getAlbumById(id) {return this._searcher.searchAlbum(this._artists, id);}
 
-  getAlbumById(id) {
+  getTrackById(id) {return this._searcher.searchTrack(this._artists, id);}
 
-  }
-
-  getTrackById(id) {
-
-  }
-
-  getPlaylistById(id) {
-
-  }
+  getPlaylistById(id) {return this._searcher.searchPlaylist(this._playlists, id);}
 
   // genres: array de generos(strings)
   // retorna: los tracks que contenga alguno de los generos en el parametro genres
