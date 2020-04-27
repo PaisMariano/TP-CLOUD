@@ -28,6 +28,7 @@ class UNQfy {
     let tempAlbum  = this._abmHandler.
       createAlbum(albumData.name, albumData.year, tempArtist);
     tempArtist.albums.push(tempAlbum);
+    return tempAlbum;
   }
 
   addTrack(albumId, trackData) {
@@ -35,6 +36,22 @@ class UNQfy {
     let tempTrack = this._abmHandler.
       createTrack(trackData.name, trackData.genres, trackData.duration, tempAlbum);
     tempAlbum.push(tempTrack);
+    return tempTrack;
+  }
+
+  removeArtist(artistId){
+    let tempArtist = getArtistById(artistId);
+    this._abmHandler.deleteArtist(this._artists, this._playlists, this._users, tempArtist);
+  }
+
+  removeAlbum(albumId){
+    let tempAlbum = getAlbumById(albumId);
+    this._abmHandler.deleteAlbum(this._artists, this._playlists, this._users, tempAlbum);
+  }
+
+  removeTrack(trackId){
+    let tempTrack = getTrackById(trackId);
+    this._abmHandler.deleteTrack(this._artists, this._playlists, this._users, tempTrack);
   }
 
   getArtistById(id) {return this._searcher.searchArtist(this._artists, id);}
