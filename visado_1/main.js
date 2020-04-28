@@ -47,8 +47,24 @@ function saveUNQfy(unqfy, filename = 'data.json') {
 */
 
 function main() {
-  console.log('arguments: ');
-  process.argv.forEach(argument => console.log(argument));
+  let dataArtist = {name : "La Renga", country: "Argentina"};
+  let dataAlbum = {name: "Despedazado por mil partes", year: "1995"}
+  let dataTrack1 = {name: "Cuando Vendran", genres: ["Rock"], duration: "4:22"}
+  let dataTrack2 = {name: "Psilosibe Mexicana", genres:["Rock"], duration: "5:34"}
+  let unqfy = new unqmod.UNQfy();
+  unqfy.addArtist(dataArtist);
+  unqfy.addAlbum(1, dataAlbum);
+  unqfy.addTrack(1, dataTrack1);
+  unqfy.addTrack(1, dataTrack2);
+  //console.log(unqfy.getArtistById(1));
+  //console.log(unqfy.getAlbumById(1));
+  //console.log(unqfy.getTrackById(1));
+  unqfy.removeArtist(1);
+  console.log("-------------------------------------------")
+  console.log(unqfy.getArtistById(1));
+  //console.log('arguments: ');
+  //process.argv.forEach(argument => console.log(argument)); 
+  
 }
 
 main();
