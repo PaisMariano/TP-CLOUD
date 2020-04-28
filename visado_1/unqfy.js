@@ -3,14 +3,16 @@ const picklify = require('picklify'); // para cargar/guarfar unqfy
 const fs = require('fs'); // para cargar/guarfar unqfy
 const AbmHandler = require('./abmHandler.js');
 const Searcher   = require('./searcher.js');
+const PlaylistGenerator = require('./playlistGenerator.js');
 
 class UNQfy {
   constructor(){
-    this._artists     = [];
-    this._users       = [];
-    this._playlists   = [];
-    this._abmHandler  = new AbmHandler();
-    this._searcher    = new Searcher();
+    this._artists           = [];
+    this._users             = [];
+    this._playlists         = [];
+    this._abmHandler        = new AbmHandler();
+    this._searcher          = new Searcher();
+    this._playlistGenerator = new PlaylistGenerator();
   }
 
   get artists(){return this._artists};
@@ -70,13 +72,13 @@ class UNQfy {
   // genres: array de generos(strings)
   // retorna: los tracks que contenga alguno de los generos en el parametro genres
   getTracksMatchingGenres(genres) {
-
+    return this._searcher.searchTracksByGenres(this.artists, genres);
   }
 
   // artistName: nombre de artista(string)
   // retorna: los tracks interpredatos por el artista con nombre artistName
   getTracksMatchingArtist(artistName) {
-
+    return this._searcher.searchTracksByArtist(this.artists, artistName);
   }
 
 
@@ -91,7 +93,7 @@ class UNQfy {
       * un metodo duration() que retorne la duración de la playlist.
       * un metodo hasTrack(aTrack) que retorna true si aTrack se encuentra en la playlist.
   */
-
+    return this._playlistGenerator.generate(name, maxDuration, genresToInclude, this.artists, this._searcher);
   }
 
   save(filename) {

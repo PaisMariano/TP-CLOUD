@@ -1,14 +1,20 @@
 class Playlist {
-    constructor(anID, aName, aDuration){
+    constructor(anID, aName, tracks){
         this._id        = anID;
         this._name      = aName;
-        this._year      = aYear;
-        this._tracks    = [];
+        this._tracks    = tracks;
       }
       
       get id(){return this._id};
       get name(){return this._name};
-      get duration(){return this._duration};
       get tracks(){return this._tracks};
+
+      duration() {
+        return this.tracks.reduce((accum, track) => (accum + track.duration), 0);
+      }
+
+      hasTrack(aTrack) {
+        return this.tracks.includes(aTrack);
+      }
 }
 module.exports = Playlist;

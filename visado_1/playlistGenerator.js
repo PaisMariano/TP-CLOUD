@@ -1,0 +1,29 @@
+const Playlist = require('./playlist.js');
+
+class PlaylistGenerator {
+    constructor() {
+        this._playlistId = 0; // preguntar si se deberia pasar por parametro
+    }
+
+    generate(aName, maxDuration, genres, artistList, searcher) {
+        const playlistTracks = searcher.searchTracksByGenres(artistList, genres);
+        let currentDuration = playlistTracks.reduce((accum, track) => accum + track.duration, 0);
+
+        while(currentDuration > maxDuration) {
+            currentDuration -= playlistTracks.shift().duration;
+        }
+        
+        // if (currentDuration > maxDuration) {
+        //     let remainderDuration = currentDuration - maxDuration;
+        //     playlistTracks.forEach(track => {
+        //         if (currentDuration > 0) {
+        //             remainderDuration -= track.duration;
+        //             playlistTracks.shift();
+        //         }
+        //     })
+        // }
+        
+        return new Playlist(this._playlistId++, aName, playlistTracks);
+    }
+}
+module.exports = PlaylistGenerator;

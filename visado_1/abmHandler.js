@@ -4,9 +4,9 @@ const Track = require('./track.js');
 
 class AbmHandler {
     constructor(){
-        this._artistId  = 0;
-        this._albumId   = 0;
-        this._trackId   = 0;
+        this._artistId  = 0; // preguntar si se deberia pasar por parametro
+        this._albumId   = 0; // preguntar si se deberia pasar por parametro
+        this._trackId   = 0; // preguntar si se deberia pasar por parametro
     }
       
     get artistId(){return this._artistId;}
