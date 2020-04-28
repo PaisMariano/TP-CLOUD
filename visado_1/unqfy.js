@@ -14,123 +14,53 @@ class UNQfy {
     this._searcher          = new Searcher();
     this._playlistGenerator = new PlaylistGenerator();
   }
-
+  //GETTERS AND SETTERS:
   get artists(){return this._artists};
   get users(){return this._users};
   get playlists(){return this._playlists};
 
-  // set artists(artistList){return this._artists = artistList};
-  // set users(userList){return this._users = userList};
-  // set playlists(playlistList){return this._playlists = playlistList};
+  set artists(artistList){return this._artists = artistList};
+  set users(userList){return this._users = userList};
+  set playlists(playlistList){return this._playlists = playlistList};
 
-  addArtist(artistData) {
-    let tempArtist = this._abmHandler.createArtist( artistData.name, 
-                                                    artistData.country);
-    this._artists.push(tempArtist);
-    return tempArtist;
+  //ADD METHODS:
+  addArtist(artistData){return this._abmHandler.createArtist(this, artistData);}
+  addAlbum(artistId, albumData){return this._abmHandler.createAlbum(this, artistId, albumData);}
+  addTrack(albumId, trackData){return this._abmHandler.createTrack(this, albumId, trackData);}
+
+  //UPDATE METHODS:
+  updateArtist(artistId, artistData){this._abmHandler.updateArtist(this, artistId, artistData);}
+  updateAlbum(albumId, albumData){this._abmHandler.updateAlbum(this, albumId, albumData);}
+  updateTrack(trackId, trackData){this._abmHandler.updateTrack(this, trackId, trackData);}
+  
+  //REMOVE METHODS:
+  removeArtist(artistId){this._abmHandler.deleteArtist(this, artistId);}
+  removeAlbum(albumId){this._abmHandler.deleteAlbum(this, albumId);}
+  removeTrack(trackId){this._abmHandler.deleteTrack(this, trackId);}
+
+  //GET METHODS:
+  getArtistById(id){return this._searcher.searchArtist(this._artists, id);}
+  getAlbumById(id){return this._searcher.searchAlbum(this._artists, id);}
+  getTrackById(id){return this._searcher.searchTrack(this._artists, id);}
+  getUserById(id){return this._searcher.searchUser(this._users, id);} //FALTA ESTE METODO 
+  getPlaylistById(id){return this._searcher.searchPlaylist(this._playlists, id);}
+  getTracksMatchingGenres(genres){return this._searcher.searchTracksByGenres(this.artists, genres);}
+  getTracksMatchingArtist(artistName){return this._searcher.searchTracksByArtist(this.artists, artistName);}
+  getPartialMatchingTracks(partialName){return this._searcher.searchTracks(this._artists, partialName);}
+  getPartialMatchingAlbums(partialName){return this._searcher.searchAlbums(this._artists, partialName);}
+  getPartialMatchingArtists(partialName){return this._searcher.searchArtists(this._artists, partialName);}
+  artistTopThreeTracks(artistId){return this._searcher.topThreeListenedTracksByArtist(this, artistId);} //TENGO QUE PASAR THIS SI O SI
+
+  //OTHER METHODS:
+  createPlaylist(name, genresToInclude, maxDuration){ //TENEMOS QUE PASAR THIS.
+    return this._playlistGenerator.generate(name, maxDuration, genresToInclude, this);
   }
-
-  addAlbum(artistId, albumData) {
-    let tempArtist = this.getArtistById(artistId);
-    let tempAlbum  = this._abmHandler.createAlbum(albumData.name, 
-                                                  albumData.year, 
-                                                  tempArtist);
-    tempArtist.albums.push(tempAlbum);
-    return tempAlbum;
+  listen(userId, trackId){ // NO NECESITARIAMOS UN USER ADMINISTRATOR ????
+    let tempUser = this.getUserById(userId);
+    tempUser.listen();
   }
-
-  addTrack(albumId, trackData) {
-    let tempAlbum = this.getAlbumById(albumId);
-    let tempTrack = this._abmHandler.createTrack( trackData.name, 
-                                                  trackData.genres, 
-                                                  trackData.duration, 
-                                                  tempAlbum);
-    tempAlbum.tracks.push(tempTrack);
-    return tempTrack;
-  }
-
-  removeArtist(artistId){
-    let tempArtist = this.getArtistById(artistId);
-    this._artists = this._abmHandler.deleteArtist(this._artists, tempArtist);
-  }
-
-  removeAlbum(albumId){
-    let tempAlbum = this.getAlbumById(albumId);
-    this._artists = this._abmHandler.deleteAlbum(this._artists, tempAlbum);
-  }
-
-  removeTrack(trackId){
-    let tempTrack = this.getTrackById(trackId);
-    this._artists = this._abmHandler.deleteTrack(this._artists, tempTrack);
-  }
-
-  getArtistById(id) {return this._searcher.searchArtist(this._artists, id);}
-
-  getAlbumById(id) {return this._searcher.searchAlbum(this._artists, id);}
-
-  getTrackById(id) {return this._searcher.searchTrack(this._artists, id);}
-
-  getPlaylistById(id) {return this._searcher.searchPlaylist(this._playlists, id);}
-
-  // genres: array de generos(strings)
-  // retorna: los tracks que contenga alguno de los generos en el parametro genres
-  getTracksMatchingGenres(genres) {
-    return this._searcher.searchTracksByGenres(this.artists, genres);
-  }
-
-  // artistName: nombre de artista(string)
-  // retorna: los tracks interpredatos por el artista con nombre artistName
-  getTracksMatchingArtist(artistName) {
-    return this._searcher.searchTracksByArtist(this.artists, artistName);
-  }
-
-
-  // name: nombre de la playlist
-  // genresToInclude: array de generos
-  // maxDuration: duración en segundos
-  // retorna: la nueva playlist creada
-  createPlaylist(name, genresToInclude, maxDuration) {
-  /*** Crea una playlist y la agrega a unqfy. ***
-    El objeto playlist creado debe soportar (al menos):
-      * una propiedad name (string)
-      * un metodo duration() que retorne la duración de la playlist.
-      * un metodo hasTrack(aTrack) que retorna true si aTrack se encuentra en la playlist.
-  */
-    return this._playlistGenerator.generate(name, maxDuration, genresToInclude, this.artists, this._searcher);
-  }
-
-  updateArtist(artistName, country) {
-
-  }
-
-  updateAlbum(albumName, year) {
-
-  }
-
-  updateTrack(trackName, genres, duration) {
-
-  }
-
-  getPartialMatchingTracks(partialName) {
-
-  }
-
-  getPartialMatchingAlbums(partialName) {
-
-  }
-
-  getPartialMatchingArtists(partialName) {
-
-  }
-
-  listen(userId, trackId) {
-
-  }
-
-  artistTopThreeTracks(artistId) {
-
-  }
-
+  
+  //GIVEN METHODS:
   save(filename) {
     const listenersBkp = this.listeners;
     this.listeners = [];
