@@ -18,7 +18,10 @@ class UNQfy {
   get artists(){return this._artists};
   get users(){return this._users};
   get playlists(){return this._playlists};
-   
+
+  // set artists(artistList){return this._artists = artistList};
+  // set users(userList){return this._users = userList};
+  // set playlists(playlistList){return this._playlists = playlistList};
 
   addArtist(artistData) {
     let tempArtist = this._abmHandler.createArtist( artistData.name, 
@@ -94,6 +97,38 @@ class UNQfy {
       * un metodo hasTrack(aTrack) que retorna true si aTrack se encuentra en la playlist.
   */
     return this._playlistGenerator.generate(name, maxDuration, genresToInclude, this.artists, this._searcher);
+  }
+
+  updateArtist(artistName, country) {
+
+  }
+
+  updateAlbum(albumName, year) {
+
+  }
+
+  updateTrack(trackName, genres, duration) {
+
+  }
+
+  getPartialMatchingTracks(partialName) {
+
+  }
+
+  getPartialMatchingAlbums(partialName) {
+
+  }
+
+  getPartialMatchingArtists(partialName) {
+
+  }
+
+  listen(userId, trackId) {
+
+  }
+
+  artistTopThreeTracks(artistId) {
+
   }
 
   save(filename) {

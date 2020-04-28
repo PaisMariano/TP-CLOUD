@@ -9,6 +9,8 @@ class PlaylistGenerator {
         const playlistTracks = searcher.searchTracksByGenres(artistList, genres);
         let currentDuration = playlistTracks.reduce((accum, track) => accum + track.duration, 0);
 
+        //version de algoritmo no optima, porque no busca que la duracion sea lo mas cercana posible a "maxDuration"
+        //a cambio de eso, es muy rapida la generacion de la playlist
         while(currentDuration > maxDuration) {
             currentDuration -= playlistTracks.shift().duration;
         }
