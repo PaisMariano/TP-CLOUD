@@ -7,6 +7,8 @@ class User {
 
     get id() { return this._id };
     get name() { return this._name };
+    get listenedTracks() { return this._listenedTracks };
+    set listenedTracks(aList) { return this._listenedTracks = aList };
 
     listen(aTrack) {
         this._listenedTracks.push(aTrack);

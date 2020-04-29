@@ -12,5 +12,8 @@ class Track {
       get genres(){return this._genres};
       get duration(){return this._duration};
       get album(){return this._album};
+      set name(aName){return this._name = aName};
+      set genres(genres){return this._genres = genres};
+      set duration(aDuration){return this._duration = aDuration};
 }
 module.exports = Track;
