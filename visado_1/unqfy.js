@@ -18,6 +18,7 @@ class UNQfy {
   get artists(){return this._artists};
   get users(){return this._users};
   get playlists(){return this._playlists};
+  get searcher(){return this._searcher};
 
   set artists(artistList){return this._artists = artistList};
   set users(userList){return this._users = userList};
@@ -27,6 +28,8 @@ class UNQfy {
   addArtist(artistData){return this._abmHandler.createArtist(this, artistData);}
   addAlbum(artistId, albumData){return this._abmHandler.createAlbum(this, artistId, albumData);}
   addTrack(albumId, trackData){return this._abmHandler.createTrack(this, albumId, trackData);}
+  addUser(userData){return this._abmHandler.createUser(this, userData);}
+  addPlaylist(playlistData){return this._playlistGenerator.createPlaylist(this, playlistData);}
 
   //UPDATE METHODS:
   updateArtist(artistId, artistData){this._abmHandler.updateArtist(this, artistId, artistData);}
@@ -52,9 +55,10 @@ class UNQfy {
   artistTopThreeTracks(artistId){return this._searcher.topThreeListenedTracksByArtist(this, artistId);} //TENGO QUE PASAR THIS SI O SI
 
   //OTHER METHODS:
-  createPlaylist(name, genresToInclude, maxDuration){ //TENEMOS QUE PASAR THIS.
+  createPlaylist(name, genresToInclude, maxDuration){ 
     return this._playlistGenerator.generate(name, maxDuration, genresToInclude, this);
   }
+  
   listen(userId, trackId){ // NO NECESITARIAMOS UN USER ADMINISTRATOR ????
     let tempUser = this.getUserById(userId);
     tempUser.listen();

@@ -88,15 +88,15 @@ class Searcher {
     }
 
     existsArtistNamed(artistList, artistName) {
-        return artistList.some(artist => artist.name === artistName.toLowerCase());
+        return artistList.some(artist => artist.name.toLowerCase() === artistName.toLowerCase());
     }
 
     existsAlbumNamed(albumList, albumName) {
-        return albumList.some(album => album.name === albumName.toLowerCase());
+        return albumList.some(album => album.name.toLowerCase() === albumName.toLowerCase());
     }
 
     existsTrackNamed(trackList, trackName) {
-        return trackList.some(track => track.name === trackName.toLowerCase());
+        return trackList.some(track => track.name.toLowerCase() === trackName.toLowerCase());
     }
 
     searchAlbumsByArtist(artistList, artistName) {
