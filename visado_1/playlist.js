@@ -8,6 +8,7 @@ class Playlist {
       get id(){return this._id};
       get name(){return this._name};
       get tracks(){return this._tracks};
+      set tracks(aList){return this._tracks = aList};
 
       duration() {
         return this.tracks.reduce((accum, track) => (accum + track.duration), 0);
