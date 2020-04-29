@@ -2,7 +2,7 @@ const Playlist = require('./playlist.js');
 
 class PlaylistGenerator {
     constructor() {
-        this._playlistId = 0; // preguntar si se deberia pasar por parametro
+        this._playlistId = 0;
     }
 
     generate(aName, maxDuration, genres, artistList, searcher) {
