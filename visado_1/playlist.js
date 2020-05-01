@@ -1,12 +1,14 @@
 class Playlist {
-    constructor(anID, aName, tracks){
+    constructor(anID, aName, aDuration, tracks){
         this._id        = anID;
         this._name      = aName;
+        this._duration  = aDuration;
         this._tracks    = tracks;
       }
       
       get id(){return this._id};
       get name(){return this._name};
+      get duration(){return this._duration};
       get tracks(){return this._tracks};
       set tracks(aList){return this._tracks = aList};
 
