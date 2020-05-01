@@ -35,17 +35,20 @@ class Searcher {
         return playlists.find(playlist => playlist.id === playlistId);
     }
 
+    searchUser(usersList, userId){
+        return usersList.find(user => user.id === userId);
+    }
+
     searchArtists(artistList, partialName) {
-        return artistList.filter(artist => artist.name.startsWith(partialName.toLowerCase()));
+        return artistList.filter(artist => artist.name.includes(partialName));
     }
 
     searchAlbums(artistList, partialName) {
         let albums = [];
 
         artistList.forEach(artist => {
-            albums.concat(artist.albums.filter(album => album.name.startsWith(partialName.toLowerCase())));
+            albums = albums.concat(artist.albums.filter(album => album.name.includes(partialName)));
         });
-
         return albums;
     }
 
@@ -54,18 +57,20 @@ class Searcher {
 
         artistList.forEach(artist => {
             artist.albums.forEach(album => {
-                tracks.concat(album.tracks.filter(track => track.name.startsWith(partialName.toLowerCase())));
+                tracks = tracks.concat(album.tracks.filter(track => track.name.includes(partialName)));
             })
         })
 
         return tracks;
     }
+    searchPlaylists(playLists, partialName) {
+        return playLists.filter(playlist => playlist.name.includes(partialName));
+    }
 
     searchTracksByArtist(artistList, artistName) {
         let tracks = [];
-
-        artistList.find(artist => artist.name === artistName.toLowerCase()).albums.forEach(album => {
-           tracks.concat(album.tracks);
+        artistList.find(artist => artist.name === artistName).albums.forEach(album => {
+           tracks = tracks.concat(album.tracks);
         })
 
         return tracks;
@@ -77,7 +82,7 @@ class Searcher {
         artistList.forEach(artist => {
             artist.albums.forEach(album => {
                 album.tracks.forEach(track => {
-                    if (genres.some(genre => track.genres.include(genre))) {
+                    if (genres.some(genre => track.genres.includes(genre))) {
                         tracks.push(track);
                     }
                 })
@@ -97,14 +102,6 @@ class Searcher {
 
     existsTrackNamed(trackList, trackName) {
         return trackList.some(track => track.name.toLowerCase() === trackName.toLowerCase());
-    }
-
-    searchAlbumsByArtist(artistList, artistName) {
-        //creo q no tiene sentido este metodo..revisar antes de implementar.
-    }
-
-    searchTracksByPlaylist(playlists, playlistName) {
-        //creo q no tiene sentido este metodo..revisar antes de implementar.
     }
 
     topThreeListenedTracksByArtist(artistList, userList, artistName) {
@@ -132,6 +129,15 @@ class Searcher {
 
     timesListenedTrack(aTrack, userList) {
         return userList.reduce((accum, user) => accum + user.timesListened(aTrack), 0);
+    }
+
+    searchByName(unqfy, aString){
+        let tempObj = {artists: [], albums: [], tracks: [], playlists: [] }
+        tempObj.artists = this.searchArtists(unqfy.artists, aString);
+        tempObj.albums = this.searchAlbums(unqfy.artists, aString);
+        tempObj.tracks = this.searchTracks(unqfy.artists, aString);
+        tempObj.playlists = this.searchPlaylists(unqfy.playlists, aString);
+        return tempObj;
     }
 }
 module.exports = Searcher;

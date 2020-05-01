@@ -42,13 +42,14 @@ class UNQfy {
   removeTrack(trackId){this._abmHandler.deleteTrack(this, trackId);}
 
   //GET METHODS:
+  searchByName(aString){return this._searcher.searchByName(this, aString);}
   getArtistById(id){return this._searcher.searchArtist(this._artists, id);}
   getAlbumById(id){return this._searcher.searchAlbum(this._artists, id);}
   getTrackById(id){return this._searcher.searchTrack(this._artists, id);}
-  getUserById(id){return this._searcher.searchUser(this._users, id);} //FALTA ESTE METODO 
+  getUserById(id){return this._searcher.searchUser(this._users, id);} 
   getPlaylistById(id){return this._searcher.searchPlaylist(this._playlists, id);}
   getTracksMatchingGenres(genres){return this._searcher.searchTracksByGenres(this.artists, genres);}
-  getTracksMatchingArtist(artistName){return this._searcher.searchTracksByArtist(this.artists, artistName);}
+  getTracksMatchingArtist(anArtist){return this._searcher.searchTracksByArtist(this.artists, anArtist.name);}
   getPartialMatchingTracks(partialName){return this._searcher.searchTracks(this._artists, partialName);}
   getPartialMatchingAlbums(partialName){return this._searcher.searchAlbums(this._artists, partialName);}
   getPartialMatchingArtists(partialName){return this._searcher.searchArtists(this._artists, partialName);}

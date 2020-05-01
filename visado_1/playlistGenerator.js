@@ -12,31 +12,31 @@ class PlaylistGenerator {
         unqfy.playlists.push(tempPlaylist);
         return tempPlaylist;
     }
-
-    //FEDE TE MODIFIQUE PARA PASAR UNQFY Y AGREGARSELO A SU LISTA DE PLAYLIST PERDONNNNN
-    generate(aName, maxDuration, genres, unqfy) {
+    generate(aName, maxDuration, genres, unqfy){
         const playlistTracks = unqfy.searcher.searchTracksByGenres(unqfy.artists, genres);
-        let currentDuration = playlistTracks.reduce((accum, track) => accum + track.duration, 0);
-
-        //version de algoritmo no optima, porque no busca que la duracion sea lo mas cercana posible a "maxDuration"
-        //a cambio de eso, es muy rapida la generacion de la playlist
-        while(currentDuration > maxDuration) {
-            currentDuration -= playlistTracks.shift().duration;
-        }
-        
-        // if (currentDuration > maxDuration) {
-        //     let remainderDuration = currentDuration - maxDuration;
-        //     playlistTracks.forEach(track => {
-        //         if (currentDuration > 0) {
-        //             remainderDuration -= track.duration;
-        //             playlistTracks.shift();
-        //         }
-        //     })
-        // }
-
-        let tempPlaylist = new Playlist(this._playlistId++, aName, playlistTracks);
+        const unSortedPlaylist = this.generateUnsorted(playlistTracks, maxDuration);
+        const duration = unSortedPlaylist.reduce((sum, curDur) => sum + curDur.duration, 0);
+        let tempPlaylist = new Playlist(this._playlistId++, aName, duration, unSortedPlaylist);
         unqfy.playlists.push(tempPlaylist);
         return tempPlaylist;
     }
+    generateUnsorted(aList, maxDuration){
+        let tempList = [];
+        let aDuration = maxDuration;
+        let currentIndex = aList.length, randomIndex, tempDuration;
+        while (aDuration > 0 && aList.length > 0) {
+            randomIndex = Math.floor(Math.random() * currentIndex);
+            currentIndex--;
+            tempDuration = aList[randomIndex].duration;
+            if(tempDuration <= aDuration){
+                aDuration = aDuration - tempDuration;
+                tempList = tempList.concat(aList.splice(randomIndex, 1));
+            }else{
+                aList.splice(randomIndex, 1);
+            }
+        }        
+        return tempList;
+    }
+
 }
 module.exports = PlaylistGenerator;
