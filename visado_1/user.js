@@ -20,7 +20,7 @@ class User {
 
   listen(aTrack) {
     this._listenedTracks.push(aTrack);
-    console.log(this._name, ' escuchando ', aTrack.name);
+    console.log(this._name, 'está escuchando', aTrack.name);
   }
 
   getListenedTracks() {

@@ -32,9 +32,47 @@ class NoMatchingPlaylistException extends NoMatchingAnythingException {
   }
 }
 
+class AlreadyExistsException extends Error {
+  constructor(anythingName, anything) {
+    super(`Ya existe un ${anything} con el nombre ${anythingName}.`);
+  }
+}
+
+class AlreadyExistsArtistException extends AlreadyExistsException {
+  constructor(artistName) {
+    super(artistName, 'artista');
+    this.name = AlreadyExistsArtistException;
+  }
+}
+
+class AlreadyExistsAlbumException extends AlreadyExistsException {
+  constructor(albumName) {
+    super(albumName, 'album');
+    this.name = AlreadyExistsAlbumException;
+  }
+}
+
+class AlreadyExistsTrackException extends AlreadyExistsException {
+  constructor(trackName) {
+    super(trackName, 'track');
+    this.name = AlreadyExistsTrackException;
+  }
+}
+
+class AlreadyExistsPlaylistException extends AlreadyExistsException {
+  constructor(playlistName) {
+    super(playlistName, 'track');
+    this.name = AlreadyExistsPlaylistException;
+  }
+}
+
 module.exports = {
   NoMatchingAlbumException,
   NoMatchingArtistException,
   NoMatchingTrackException,
-  NoMatchingPlaylistException
+  NoMatchingPlaylistException,
+  AlreadyExistsArtistException,
+  AlreadyExistsAlbumException,
+  AlreadyExistsTrackException,
+  AlreadyExistsPlaylistException
 };
