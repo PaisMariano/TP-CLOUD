@@ -2,6 +2,7 @@
 
 const fs = require('fs'); // necesitado para guardar/cargar unqfy
 const unqmod = require('./unqfy'); // importamos el modulo unqfy
+const CommandHandler = require('./commandHandler');
 
 // Retorna una instancia de UNQfy. Si existe filename, recupera la instancia desde el archivo.
 function getUNQfy(filename = 'data.json') {
@@ -47,32 +48,39 @@ function saveUNQfy(unqfy, filename = 'data.json') {
 */
 
 function main() {
-  let dataArtist = {name : "La Renga", country: "Argentina"};
-  let dataAlbum = {name: "Despedazado por mil partes", year: "1995"};
-  let dataTrack1 = {name: "Cuando Vendran", genres: ["Rock"], duration: "4:22"};
-  let dataTrack2 = {name: "Psilosibe Mexicana", genres:["Rock"], duration: "5:34"};
-  let dataUser = {name: "Mariano"};
-  let dataPlaylist = {name: "lista1", tracks: []};
-  let unqfy = new unqmod.UNQfy();
-  unqfy.addArtist(dataArtist);
-  unqfy.addAlbum(1, dataAlbum);
-  unqfy.addTrack(1, dataTrack1);
-  unqfy.addTrack(1, dataTrack2);
-  unqfy.addUser(dataUser);
-  unqfy.addPlaylist(dataPlaylist);
-  unqfy.users[0].listenedTracks.push(unqfy.getTrackById(1));
-  unqfy.users[0].listenedTracks.push(unqfy.getTrackById(2));
-  unqfy.playlists[0].tracks.push(unqfy.getTrackById(1));
-  unqfy.playlists[0].tracks.push(unqfy.getTrackById(2));
-  console.log(unqfy.playlists[0]);
-  console.log("-------------------------------------------");
-  unqfy.removeTrack(1);
-  //console.log(unqfy.getArtistById(1));
-  console.log("-------------------------------------------");
-  //console.log(unqfy.getTrackById(1));
-  console.log("-------------------------------------------");
-  //console.log('arguments: ');
-  //process.argv.forEach(argument => console.log(argument)); 
+
+  const commandHandler = new CommandHandler(process.argv.slice(2));
+  const unqfy = getUNQfy();
+  commandHandler.executeCommand(unqfy);
+  saveUNQfy(unqfy);
+
+
+  // let dataArtist = {name : "La Renga", country: "Argentina"};
+  // let dataAlbum = {name: "Despedazado por mil partes", year: "1995"};
+  // let dataTrack1 = {name: "Cuando Vendran", genres: ["Rock"], duration: "4:22"};
+  // let dataTrack2 = {name: "Psilosibe Mexicana", genres:["Rock"], duration: "5:34"};
+  // let dataUser = {name: "Mariano"};
+  // let dataPlaylist = {name: "lista1", tracks: []};
+  // let unqfy = new unqmod.UNQfy();
+  // unqfy.addArtist(dataArtist);
+  // unqfy.addAlbum(1, dataAlbum);
+  // unqfy.addTrack(1, dataTrack1);
+  // unqfy.addTrack(1, dataTrack2);
+  // unqfy.addUser(dataUser);
+  // unqfy.addPlaylist(dataPlaylist);
+  // unqfy.users[0].listenedTracks.push(unqfy.getTrackById(1));
+  // unqfy.users[0].listenedTracks.push(unqfy.getTrackById(2));
+  // unqfy.playlists[0].tracks.push(unqfy.getTrackById(1));
+  // unqfy.playlists[0].tracks.push(unqfy.getTrackById(2));
+  // console.log(unqfy.playlists[0]);
+  // console.log("-------------------------------------------");
+  // unqfy.removeTrack(1);
+  // //console.log(unqfy.getArtistById(1));
+  // console.log("-------------------------------------------");
+  // //console.log(unqfy.getTrackById(1));
+  // console.log("-------------------------------------------");
+  // //console.log('arguments: ');
+  // //process.argv.forEach(argument => console.log(argument)); 
   
 }
 

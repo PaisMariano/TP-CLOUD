@@ -4,6 +4,11 @@ const fs = require('fs'); // para cargar/guarfar unqfy
 const AbmHandler = require('./abmHandler.js');
 const Searcher   = require('./searcher.js');
 const PlaylistGenerator = require('./playlistGenerator.js');
+const Artist = require('./artist.js');
+const Album = require('./album.js');
+const Track = require('./track.js');
+const Playlist = require('./playlist.js');
+const User = require('./user.js');
 
 class UNQfy {
   constructor(){
@@ -15,14 +20,14 @@ class UNQfy {
     this._playlistGenerator = new PlaylistGenerator();
   }
   //GETTERS AND SETTERS:
-  get artists(){return this._artists};
-  get users(){return this._users};
-  get playlists(){return this._playlists};
-  get searcher(){return this._searcher};
+  get artists(){return this._artists;}
+  get users(){return this._users;}
+  get playlists(){return this._playlists;}
+  get searcher(){return this._searcher;}
 
-  set artists(artistList){return this._artists = artistList};
-  set users(userList){return this._users = userList};
-  set playlists(playlistList){return this._playlists = playlistList};
+  set artists(artistList){return this._artists = artistList;}
+  set users(userList){return this._users = userList;}
+  set playlists(playlistList){return this._playlists = playlistList;}
 
   //ADD METHODS:
   addArtist(artistData){return this._abmHandler.createArtist(this, artistData);}
@@ -40,6 +45,7 @@ class UNQfy {
   removeArtist(artistId){this._abmHandler.deleteArtist(this, artistId);}
   removeAlbum(albumId){this._abmHandler.deleteAlbum(this, albumId);}
   removeTrack(trackId){this._abmHandler.deleteTrack(this, trackId);}
+  removePlaylist(playlistId){this._playlistGenerator.removePlaylist(this, playlistId);}
 
   //GET METHODS:
   searchByName(aString){return this._searcher.searchByName(this, aString);}
@@ -61,8 +67,8 @@ class UNQfy {
   }
   
   listen(userId, trackId){ // NO NECESITARIAMOS UN USER ADMINISTRATOR ????
-    let tempUser = this.getUserById(userId);
-    tempUser.listen();
+    const tempUser = this.getUserById(userId);
+    tempUser.listen(this.getTrackById(trackId));
   }
   
   //GIVEN METHODS:
@@ -79,12 +85,11 @@ class UNQfy {
   static load(filename) {
     const serializedData = fs.readFileSync(filename, {encoding: 'utf-8'});
     //COMPLETAR POR EL ALUMNO: Agregar a la lista todas las clases que necesitan ser instanciadas
-    const classes = [UNQfy];
+    const classes = [UNQfy, Artist, Album, Track, Playlist, User, PlaylistGenerator, AbmHandler, Searcher];
     return picklify.unpicklify(JSON.parse(serializedData), classes);
   }
 }
 
-// COMPLETAR POR EL ALUMNO: exportar todas las clases que necesiten ser utilizadas desde un modulo cliente
 module.exports = {
   UNQfy,
 };
