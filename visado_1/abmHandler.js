@@ -2,7 +2,8 @@ const Artist = require('./artist.js');
 const Album = require('./album.js');
 const Track = require('./track.js');
 const User = require('./user.js');
-const {NoMatchingAlbumException, NoMatchingArtistException} = require('./exceptions.js');
+const {NoMatchingAlbumException, NoMatchingArtistException, AlreadyExistsAlbumException,
+      AlreadyExistsArtistException, AlreadyExistsTrackException} = require('./exceptions.js');
 
 class AbmHandler {
   constructor() {
@@ -32,7 +33,8 @@ class AbmHandler {
     if (!unqfy.searcher.existsArtistNamed(unqfy.artists, artistData.name)) {
       unqfy.artists.push(tempArtist);
     } else {
-      throw Error('Ya existe un artista con ese nombre.');
+      this._artistId = this._artisId - 1;
+      throw AlreadyExistsArtistException(artistData.name);
     }
     return tempArtist;
   }
@@ -51,7 +53,8 @@ class AbmHandler {
     if (!unqfy.searcher.existsAlbumNamed(tempArtist.albums, albumData.name)) {
       tempArtist.albums.push(tempAlbum);
     } else {
-      throw Error('Ya existe un album con ese nombre para ese artista.');
+      this._albumId = this._albumId - 1;
+      throw AlreadyExistsAlbumException(albumData.name);
     }
     return tempAlbum;
   }
@@ -71,7 +74,8 @@ class AbmHandler {
     if (!unqfy.searcher.existsTrackNamed(tempAlbum.tracks, trackData.name)) {
       tempAlbum.tracks.push(tempTrack);
     } else {
-      throw Error('Ya existe un track con ese nombre en el Album.');
+      this._trackId = this._trackId - 1;
+      throw AlreadyExistsTrackException(trackData.name);
     }
     return tempTrack;
   }

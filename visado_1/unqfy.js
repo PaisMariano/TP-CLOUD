@@ -9,6 +9,7 @@ const Album = require('./album.js');
 const Track = require('./track.js');
 const Playlist = require('./playlist.js');
 const User = require('./user.js');
+const UserHandler = require('./userHandler.js');
 
 class UNQfy {
   constructor(){
@@ -18,6 +19,7 @@ class UNQfy {
     this._abmHandler        = new AbmHandler();
     this._searcher          = new Searcher();
     this._playlistGenerator = new PlaylistGenerator();
+    this._userHandler       = new UserHandler();
   }
   //GETTERS AND SETTERS:
   get artists(){return this._artists;}
@@ -63,12 +65,17 @@ class UNQfy {
 
   //OTHER METHODS:
   createPlaylist(name, genresToInclude, maxDuration){ 
-    return this._playlistGenerator.generate(name, maxDuration, genresToInclude, this);
+    return this._playlistGenerator.generate(
+      name,
+      maxDuration, 
+      genresToInclude, 
+      this);
   }
   
-  listen(userId, trackId){ // NO NECESITARIAMOS UN USER ADMINISTRATOR ????
-    const tempUser = this.getUserById(userId);
-    tempUser.listen(this.getTrackById(trackId));
+  listen(userId, trackId){
+    return this._userHandler.listen(
+      this.getUserById(userId),
+      this.getTrackById(trackId));
   }
   
   //GIVEN METHODS:
