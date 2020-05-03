@@ -1,6 +1,10 @@
 class Searcher {
   searchArtist(artistList, artistId) {
-    return artistList.find((artist) => artist.id === artistId);
+    let artist = artistList.find((artist) => artist.id === artistId);
+    if (artist === undefined) {
+      throw new NoMatchingArtistException(artistId);
+    }
+    return artist;
   }
 
   searchAlbum(artistList, albumId) {
@@ -11,7 +15,9 @@ class Searcher {
         album = artist.albums.find((album) => album.id === albumId);
       }
     });
-
+    if (album === undefined) {
+      throw new NoMatchingAlbumException(albumId);
+    }
     return album;
   }
 
@@ -27,16 +33,26 @@ class Searcher {
         });
       }
     });
-
+    if (track === undefined) {
+      throw new NoMatchingTrackException(trackId);
+    }
     return track;
   }
 
   searchPlaylist(playlists, playlistId) {
-    return playlists.find((playlist) => playlist.id === playlistId);
+    let playlist = playlists.find((playlist) => playlist.id === playlistId);
+    if (playlist === undefined) {
+      throw new NoMatchingPlaylistException(playlistId);
+    }
+    return playlist;
   }
 
   searchUser(usersList, userId) {
-    return usersList.find((user) => user.id === userId);
+    let user = usersList.find((user) => user.id === userId);
+    if (user === undefined) {
+      throw new NoMatchingUserException(userId);
+    }
+    return user;
   }
 
   searchArtists(artistList, partialName) {
@@ -148,6 +164,17 @@ class Searcher {
     tempObj.tracks = this.searchTracks(unqfy.artists, aString);
     tempObj.playlists = this.searchPlaylists(unqfy.playlists, aString);
     return tempObj;
+  }
+
+  listenedTracks(unqfy, userId){
+    let tempUser = unqfy.getUserById(userId);
+    return tempUser.getListenedTracks();
+  }
+  
+  timesListened(unqfy, userId, trackId){
+    let tempUser  = uqnfy.getUserById(userId);
+    let tempTrack = unqfy.getTrackById(trackId);
+    return tempUser.timesListened(tempTrack);
   }
 }
 module.exports = Searcher;
