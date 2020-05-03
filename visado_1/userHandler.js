@@ -1,8 +1,8 @@
 class UserHandler{
     
-    listen(aUser, aTrack){
-        aUser.listen(aTrack);
-    }
+  listen(aUser, aTrack){
+    aUser.listen(aTrack);
+  }
 }
 
 module.exports = UserHandler;

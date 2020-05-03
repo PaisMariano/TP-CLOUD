@@ -57,11 +57,11 @@ class UNQfy {
   getUserById(id){return this._searcher.searchUser(this._users, id);} 
   getPlaylistById(id){return this._searcher.searchPlaylist(this._playlists, id);}
   getTracksMatchingGenres(genres){return this._searcher.searchTracksByGenres(this.artists, genres);}
-  getTracksMatchingArtist(anArtist){return this._searcher.searchTracksByArtist(this.artists, anArtist.name);}
+  getTracksMatchingArtist(anArtist){return this._searcher.searchTracksByArtist(this._artists, anArtist.id);}
   getPartialMatchingTracks(partialName){return this._searcher.searchTracks(this._artists, partialName);}
   getPartialMatchingAlbums(partialName){return this._searcher.searchAlbums(this._artists, partialName);}
   getPartialMatchingArtists(partialName){return this._searcher.searchArtists(this._artists, partialName);}
-  artistTopThreeTracks(artistId){return this._searcher.topThreeListenedTracksByArtist(this, artistId);} //TENGO QUE PASAR THIS SI O SI
+  artistTopThreeTracks(artistId){return this._searcher.topThreeListenedTracksByArtist(this._artists, this._users, artistId);}
 
   //OTHER METHODS:
   createPlaylist(name, genresToInclude, maxDuration){ 

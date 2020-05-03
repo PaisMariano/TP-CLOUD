@@ -59,18 +59,22 @@ class CommandHandler {
       //formato: deleteArtist artistId
       deleteArtist: function(unqfy) {
         unqfy.removeArtist(commandArgs[1]);
+        printer.printMessage('Se eliminó el artista correctamente.');
       },
       //formato: deleteAlbum albumId
       deleteAlbum: function(unqfy) {
         unqfy.removeAlbum(commandArgs[1]);
+        printer.printMessage('Se eliminó el album correctamente.');
       },
       //formato: deleteTrack trackId
       deleteTrack: function(unqfy) {
         unqfy.removeTrack(commandArgs[1]);
+        printer.printMessage('Se eliminó el track correctamente.');
       },
       //formato: deletePlaylist playlistId
       deletePlaylist: function(unqfy) {
         unqfy.removePlaylist(commandArgs[1]);
+        printer.printMessage('Se eliminó la playlist correctamente.');
       },
 
       // GETTERS

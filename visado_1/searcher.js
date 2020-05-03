@@ -71,15 +71,9 @@ class Searcher {
     return playLists.filter((playlist) => playlist.name.includes(partialName));
   }
 
-  searchTracksByArtist(artistList, artistName) {
-    let tracks = [];
-    artistList
-      .find((artist) => artist.name === artistName)
-      .albums.forEach((album) => {
-        tracks = tracks.concat(album.tracks);
-      });
-
-    return tracks;
+  searchTracksByArtist(artistList, artistId) {
+    const artist = this.searchArtist(artistList, artistId);
+    return artist.albums.reduce((acc, album) => acc.concat(album.tracks),[]);
   }
 
   searchTracksByGenres(artistList, genres) {
@@ -117,15 +111,15 @@ class Searcher {
     );
   }
 
-  topThreeListenedTracksByArtist(artistList, userList, artistName) {
-    let artistTracks = this.searchTracksByArtist(artistList, artistName);
+  topThreeListenedTracksByArtist(artistList, userList, artistId) {
+    let artistTracks = this.searchTracksByArtist(artistList, artistId);
 
     //mapeo la lista de tracks del artista con una lista de tuplas que tienen el track y la cantidad de veces q se escucho
     artistTracks = artistTracks.map((track) => {
       return [track, this.timesListenedTrack(track, userList)];
     });
 
-    //ordeno la lista de tuplas con segun la cantidad de veces que se escucho el track
+    //ordeno la lista de tuplas segun la cantidad de veces que se escucho el track
     artistTracks = artistTracks.sort((trackTupleA, trackTupleB) => {
       if (trackTupleA[1] > trackTupleB[1]) {
         return 1;
