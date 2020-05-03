@@ -1,7 +1,9 @@
 class UserHandler{
     
-  listen(aUser, aTrack){
-    aUser.listen(aTrack);
+  listen(unqfy, userId, trackId){
+    let tempUser  = uqnfy.getUserById(userId);
+    let tempTrack = unqfy.getTrackById(trackId);
+    tempUser.listen(tempTrack);
   }
 }
 

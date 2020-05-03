@@ -40,9 +40,7 @@ class AbmHandler {
   }
   createAlbum(unqfy, artistId, albumData) {
     const tempArtist = unqfy.getArtistById(artistId);
-    if (tempArtist === undefined) {
-      throw new NoMatchingArtistException(artistId);
-    }
+    
     this._albumId = this._albumId + 1;
     const tempAlbum = new Album(
       this._albumId,
@@ -60,9 +58,7 @@ class AbmHandler {
   }
   createTrack(unqfy, albumId, trackData) {
     const tempAlbum = unqfy.getAlbumById(albumId);
-    if (tempAlbum === undefined) {
-      throw new NoMatchingAlbumException(albumId);
-    }
+
     this._trackId = this._trackId + 1;
     const tempTrack = new Track(
       this._trackId,
