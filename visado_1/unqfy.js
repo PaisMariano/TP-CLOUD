@@ -56,26 +56,26 @@ class UNQfy {
   getTrackById(id){return this._searcher.searchTrack(this._artists, id);}
   getUserById(id){return this._searcher.searchUser(this._users, id);} 
   getPlaylistById(id){return this._searcher.searchPlaylist(this._playlists, id);}
-  getTracksMatchingGenres(genres){return this._searcher.searchTracksByGenres(this.artists, genres);}
+  getTracksMatchingGenres(genres){return this._searcher.searchTracksByGenres(this._artists, genres);}
   getTracksMatchingArtist(anArtist){return this._searcher.searchTracksByArtist(this._artists, anArtist.id);}
   getPartialMatchingTracks(partialName){return this._searcher.searchTracks(this._artists, partialName);}
   getPartialMatchingAlbums(partialName){return this._searcher.searchAlbums(this._artists, partialName);}
   getPartialMatchingArtists(partialName){return this._searcher.searchArtists(this._artists, partialName);}
+  getPartialMatchingPlaylists(partialName){return this._searcher.searchPlaylists(this._playlists, partialName);}
   artistTopThreeTracks(artistId){return this._searcher.topThreeListenedTracksByArtist(this._artists, this._users, artistId);}
+  timesListened(userId, trackId) {return this._searcher.timesListened(this, userId, trackId);}
+  listen(userId, trackId){return this._searcher.listen(this, userId, trackId);}
 
-  //OTHER METHODS:
+  //USER METHODS
+  listenedTracks(userId) {return this._userHandler.listenedTracks(this, userId);}
+
+  //PLAYLIST METHODS:
   createPlaylist(name, genresToInclude, maxDuration){ 
     return this._playlistGenerator.generate(
       name,
       maxDuration, 
       genresToInclude, 
       this);
-  }
-  
-  listen(userId, trackId){
-    return this._userHandler.listen(
-      this.getUserById(userId),
-      this.getTrackById(trackId));
   }
   
   //GIVEN METHODS:

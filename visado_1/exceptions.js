@@ -32,6 +32,13 @@ class NoMatchingPlaylistException extends NoMatchingAnythingException {
   }
 }
 
+class NoMatchingUserException extends NoMatchingAnythingException {
+  constructor(userId) {
+    super(userId, 'playlist');
+    this.name = NoMatchingUserException;
+  }
+}
+
 class AlreadyExistsException extends Error {
   constructor(anythingName, anything) {
     super(`Ya existe un ${anything} con el nombre ${anythingName}.`);
@@ -71,6 +78,7 @@ module.exports = {
   NoMatchingArtistException,
   NoMatchingTrackException,
   NoMatchingPlaylistException,
+  NoMatchingUserException,
   AlreadyExistsArtistException,
   AlreadyExistsAlbumException,
   AlreadyExistsTrackException,
