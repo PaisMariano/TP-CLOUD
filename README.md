@@ -55,8 +55,6 @@ A continuación se listan los comandos que acepta y cómo usarlos:
 
   Reemplazar `name` por el nombre del track, `albumId` por el id de su album, `duration` por la duración del mismo, y el resto de los argumentos van a ser leidos como géneros (`genre1`, `genre2`, etc).
 
-  [^[ \]]: Las llaves [ ] representan la lista de argumentos
-
 - **Agregar usuario**
 
   ```bash
@@ -193,8 +191,6 @@ A continuación se listan los comandos que acepta y cómo usarlos:
 
   Reemplazar `genre1`, `genre2` y todos los siguientes argumentos por los géneros.
 
-  [^[ \]]: Las llaves [ ] representan la lista de argumentos
-
 - **Buscar todas las entidades por nombre parcial (artistas, albumes, tracks y playlists)**
 
   ```bash
@@ -270,8 +266,6 @@ A continuación se listan los comandos que acepta y cómo usarlos:
   ```
 
   Reemplazar `name` por el nombre del playlist, `maxDuration` por la duración máxima de la misma, y `genre1`, `genre2`, etc y todos los siguientes argumentos por los géneros posibles para sus tracks.
-
-  [^[ \]]: Las llaves [ ] representan la lista de argumentos
 
 - **Un usuario escucha un track**
 
