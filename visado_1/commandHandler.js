@@ -52,7 +52,7 @@ class CommandHandler {
           console.error(exception);
         }
       },
-      //formato: addUser userName
+      //formato: addUser name
       addUser: function(unqfy) {
         const userData = {
           name: commandArgs[1]
@@ -89,6 +89,7 @@ class CommandHandler {
       },
 
       // GETTERS
+      //formato: getArtists
       getArtists: function(unqfy) {
         printer.printArray('Artistas de UNQfy', unqfy.artists);
       },
@@ -100,6 +101,7 @@ class CommandHandler {
       getTracks: function(unqfy) {
         printer.printArray(`Tracks del album de id ${commandArgs[1]}`, unqfy.getAlbumById(commandArgs[1]).tracks);
       },
+      //formato: getPlaylists
       getPlaylists: function(unqfy) {
         printer.printArray('Playlists de UNQfy', unqfy.playlists);
       },
@@ -135,6 +137,15 @@ class CommandHandler {
         try {
           const playlist = unqfy.getPlaylistById(commandArgs[1]);
           printer.printEntity(`Playlist de id ${commandArgs[1]}`, playlist);
+        } catch (exception) {
+          console.error(exception);
+        }
+      },
+      //formato: getUser userId
+      getUser: function(unqfy) {
+        try {
+          const user = unqfy.getUserById(commandArgs[1]);
+          printer.printEntity(`User de id ${commandArgs[1]}`, user);
         } catch (exception) {
           console.error(exception);
         }
@@ -178,47 +189,48 @@ class CommandHandler {
       searchPlaylistsPartialName: function(unqfy) {
         printer.printArray('Playlists encontrados', unqfy.getPartialMatchingPlaylists(commandArgs[1]));
       },
-      //formato: top3TracksFromArtist artistId
-      top3TracksFromArtist: function(unqfy) {
-        try {
-          const tracks = unqfy.artistTopThreeTracks(commandArgs[1]);
-          printer.printArray('Top 3 Tracks', tracks);
-        } catch (exception) {
-          console.error(exception);
-        }
-      },
       //formato: getListenedTracksByUser userId
       getListenedTracksByUser: function(unqfy) {
-        /**
-         * TODO: Revisar el nombre del mensaje en unqfy!!
-         */
         try {
-          const tracks = unqfy.getListenedTracksByUser(commandArgs[1]);
+          const tracks = unqfy.listenedTracks(commandArgs[1]);
           printer.printArray(`Tracks escuchados por el usuario de id ${commandArgs[1]}`, tracks);
         } catch (exception) {
           console.error(exception);
         }
       },
-      //formato: timesListenedTrackByUser
-      timesListenedTrackByUser: function(unqfy) {
-
-      },
 
       // CUSTOMS
-      //formato: generatePlaylists playlistName maxDuration genre1 genre2 .. genreN
-      generatePlaylists: function(unqfy) {
+      //formato: timesListenedTrackByUser userId trackId
+      timesListenedTrackByUser: function(unqfy) {
+        try {
+          const timesListened = unqfy.timesListened(commandArgs[1], commandArgs[2]);
+          printer.printMessage(`El usuario de id ${commandArgs[1]} escuchó el track de id ${commandArgs[2]} ${timesListened} veces`);
+        } catch (exception) {
+          console.error(exception);
+        }
+      },
+      //formato: top3TracksFromArtist artistId
+      top3TracksFromArtist: function(unqfy) {
+        try {
+          const tracks = unqfy.artistTopThreeTracks(commandArgs[1]);
+          printer.printArray(`Top 3 Tracks del artista de id ${commandArgs[1]}`, tracks);
+        } catch (exception) {
+          console.error(exception);
+        }
+      },
+      //formato: generatePlaylist name maxDuration genre1 genre2 .. genreN
+      generatePlaylist: function(unqfy) {
         printer.printEntity('Playlist generado', unqfy.createPlaylist(commandArgs[1], commandArgs.slice(3), commandArgs[2]));
       },
-
-
-
       //formato: userListenTrack userId trackId
       userListenTrack: function(unqfy) {
-        /**TODO 
-         * unqfy.userListenTrack(commandArgs[1], commandArgs[2]);
-         */
+        try {
+          unqfy.listen(commandArgs[1], commandArgs[2]);
+          printer.printMessage(`El usuario con id ${commandArgs[1]} escuchó el track con id ${commandArgs[2]} correctamente`);
+        } catch (exception) {
+          console.error(exception);
+        }
       },
-
 
     };
   }
