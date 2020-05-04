@@ -1,6 +1,10 @@
+const {NoMatchingArtistException, NoMatchingAlbumException,
+  NoMatchingTrackException, NoMatchingPlaylistException,
+  NoMatchingUserException} = require('./exceptions');
+
 class Searcher {
   searchArtist(artistList, artistId) {
-    let artist = artistList.find((artist) => artist.id === artistId);
+    const artist = artistList.find((artist) => artist.id === artistId);
     if (artist === undefined) {
       throw new NoMatchingArtistException(artistId);
     }
@@ -40,7 +44,7 @@ class Searcher {
   }
 
   searchPlaylist(playlists, playlistId) {
-    let playlist = playlists.find((playlist) => playlist.id === playlistId);
+    const playlist = playlists.find((playlist) => playlist.id === playlistId);
     if (playlist === undefined) {
       throw new NoMatchingPlaylistException(playlistId);
     }
@@ -48,7 +52,7 @@ class Searcher {
   }
 
   searchUser(usersList, userId) {
-    let user = usersList.find((user) => user.id === userId);
+    const user = usersList.find((user) => user.id === userId);
     if (user === undefined) {
       throw new NoMatchingUserException(userId);
     }
@@ -167,13 +171,13 @@ class Searcher {
   }
 
   listenedTracks(unqfy, userId){
-    let tempUser = unqfy.getUserById(userId);
+    const tempUser = unqfy.getUserById(userId);
     return tempUser.getListenedTracks();
   }
   
   timesListened(unqfy, userId, trackId){
-    let tempUser  = uqnfy.getUserById(userId);
-    let tempTrack = unqfy.getTrackById(trackId);
+    const tempUser  = unqfy.getUserById(userId);
+    const tempTrack = unqfy.getTrackById(trackId);
     return tempUser.timesListened(tempTrack);
   }
 }
