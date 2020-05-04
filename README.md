@@ -37,7 +37,7 @@ A continuación se listan los comandos que acepta y cómo usarlos:
   node main.js addArtist <name> <country>
   ```
 
-  Reemplar `name` por el nombre del artista y `country` por el país del mismo.
+  Reemplazar `name` por el nombre del artista y `country` por el país del mismo.
 
 - **Agregar album**
 
@@ -129,6 +129,12 @@ A continuación se listan los comandos que acepta y cómo usarlos:
 
   ```bash
   node main.js getPlaylists
+  ```
+
+- **Obetener todos los users**
+
+  ```bash
+  node main.js getUsers
   ```
 
 - **Obtener artista**

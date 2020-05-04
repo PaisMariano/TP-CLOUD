@@ -64,7 +64,7 @@ class UNQfy {
   getPartialMatchingPlaylists(partialName){return this._searcher.searchPlaylists(this._playlists, partialName);}
   artistTopThreeTracks(artistId){return this._searcher.topThreeListenedTracksByArtist(this._artists, this._users, artistId);}
   timesListened(userId, trackId) {return this._searcher.timesListened(this, userId, trackId);}
-  listen(userId, trackId){return this._searcher.listen(this, userId, trackId);}
+  listen(userId, trackId){return this._userHandler.listen(this, userId, trackId);}
 
   //USER METHODS
   listenedTracks(userId) {return this._userHandler.listenedTracks(this, userId);}
@@ -92,7 +92,7 @@ class UNQfy {
   static load(filename) {
     const serializedData = fs.readFileSync(filename, {encoding: 'utf-8'});
     //COMPLETAR POR EL ALUMNO: Agregar a la lista todas las clases que necesitan ser instanciadas
-    const classes = [UNQfy, Artist, Album, Track, Playlist, User, PlaylistGenerator, AbmHandler, Searcher];
+    const classes = [UNQfy, Artist, Album, Track, Playlist, User, PlaylistGenerator, AbmHandler, Searcher, UserHandler];
     return picklify.unpicklify(JSON.parse(serializedData), classes);
   }
 }

@@ -1,9 +1,14 @@
 class UserHandler{
     
   listen(unqfy, userId, trackId){
-    let tempUser  = uqnfy.getUserById(userId);
-    let tempTrack = unqfy.getTrackById(trackId);
+    const tempUser  = unqfy.getUserById(userId);
+    const tempTrack = unqfy.getTrackById(trackId);
     tempUser.listen(tempTrack);
+  }
+
+  listenedTracks(unqfy, userId){
+    const tempUser = unqfy.getUserById(userId);
+    return tempUser.getListenedTracks();
   }
 }
 

@@ -5,9 +5,8 @@ class PlaylistGenerator {
     this._playlistId = 0;
   }
   createPlaylist(unqfy, playlistData) {
-    this._playlistId = this._playlistId + 1;
     const tempPlaylist = new Playlist(
-      this._playlistId,
+      ++this._playlistId,
       playlistData.name,
       playlistData.tracks
     );
