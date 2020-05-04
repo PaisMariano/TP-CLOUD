@@ -141,10 +141,10 @@ class Searcher {
 
     //ordeno la lista de tuplas segun la cantidad de veces que se escucho el track
     artistTracks = artistTracks.sort((trackTupleA, trackTupleB) => {
-      if (trackTupleA[1] > trackTupleB[1]) {
+      if (trackTupleA[1] < trackTupleB[1]) {
         return 1;
       }
-      if (trackTupleA[1] < trackTupleB[1]) {
+      if (trackTupleA[1] > trackTupleB[1]) {
         return -1;
       }
       return 0;

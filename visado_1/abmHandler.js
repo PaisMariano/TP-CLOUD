@@ -2,8 +2,8 @@ const Artist = require('./artist.js');
 const Album = require('./album.js');
 const Track = require('./track.js');
 const User = require('./user.js');
-const {NoMatchingAlbumException, NoMatchingArtistException, AlreadyExistsAlbumException,
-      AlreadyExistsArtistException, AlreadyExistsTrackException} = require('./exceptions.js');
+const {AlreadyExistsArtistException, AlreadyExistsAlbumException,
+  AlreadyExistsTrackException} = require('./exceptions.js');
 
 class AbmHandler {
   constructor() {
@@ -24,23 +24,26 @@ class AbmHandler {
   }
 
   createArtist(unqfy, artistData) {
+    if (unqfy.searcher.existsArtistNamed(unqfy.artists, artistData.name)) {
+      throw new AlreadyExistsArtistException(artistData.name);
+    }
+
     this._artistId = this._artistId + 1;
     const tempArtist = new Artist(
       this._artistId,
       artistData.name,
       artistData.country
     );
-    if (!unqfy.searcher.existsArtistNamed(unqfy.artists, artistData.name)) {
-      unqfy.artists.push(tempArtist);
-    } else {
-      this._artistId = this._artisId - 1;
-      throw AlreadyExistsArtistException(artistData.name);
-    }
+    unqfy.artists.push(tempArtist);
+
     return tempArtist;
   }
   createAlbum(unqfy, artistId, albumData) {
     const tempArtist = unqfy.getArtistById(artistId);
-    
+    if (unqfy.searcher.existsAlbumNamed(tempArtist.albums, albumData.name)) {
+      throw new AlreadyExistsAlbumException(albumData.name, artistId);
+    }
+
     this._albumId = this._albumId + 1;
     const tempAlbum = new Album(
       this._albumId,
@@ -48,16 +51,15 @@ class AbmHandler {
       albumData.year,
       tempArtist
     );
-    if (!unqfy.searcher.existsAlbumNamed(tempArtist.albums, albumData.name)) {
-      tempArtist.albums.push(tempAlbum);
-    } else {
-      this._albumId = this._albumId - 1;
-      throw AlreadyExistsAlbumException(albumData.name);
-    }
+    tempArtist.albums.push(tempAlbum);
+
     return tempAlbum;
   }
   createTrack(unqfy, albumId, trackData) {
     const tempAlbum = unqfy.getAlbumById(albumId);
+    if (unqfy.searcher.existsTrackNamed(tempAlbum.tracks, trackData.name)) {
+      throw new AlreadyExistsTrackException(trackData.name, albumId);
+    }
 
     this._trackId = this._trackId + 1;
     const tempTrack = new Track(
@@ -67,12 +69,8 @@ class AbmHandler {
       trackData.duration,
       tempAlbum
     );
-    if (!unqfy.searcher.existsTrackNamed(tempAlbum.tracks, trackData.name)) {
-      tempAlbum.tracks.push(tempTrack);
-    } else {
-      this._trackId = this._trackId - 1;
-      throw AlreadyExistsTrackException(trackData.name);
-    }
+    tempAlbum.tracks.push(tempTrack);
+
     return tempTrack;
   }
   createUser(unqfy, userData) {
