@@ -2,7 +2,13 @@
 
 ------
 
-[TOC]
+**Links a tipos de comandos**
+
+- [Creadores](#creadores)
+- [Eliminadores](#eliminadores)
+- [Getters](#getters)
+- [Buscadores](#buscadores)
+- [Varios](#varios)
 
 ------
 
