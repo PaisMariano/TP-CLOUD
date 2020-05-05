@@ -4,6 +4,12 @@ const fs = require('fs'); // para cargar/guarfar unqfy
 const AbmHandler = require('./abmHandler.js');
 const Searcher   = require('./searcher.js');
 const PlaylistGenerator = require('./playlistGenerator.js');
+const Artist = require('./artist.js');
+const Album = require('./album.js');
+const Track = require('./track.js');
+const Playlist = require('./playlist.js');
+const User = require('./user.js');
+const UserHandler = require('./userHandler.js');
 
 class UNQfy {
   constructor(){
@@ -13,16 +19,17 @@ class UNQfy {
     this._abmHandler        = new AbmHandler();
     this._searcher          = new Searcher();
     this._playlistGenerator = new PlaylistGenerator();
+    this._userHandler       = new UserHandler();
   }
   //GETTERS AND SETTERS:
-  get artists(){return this._artists};
-  get users(){return this._users};
-  get playlists(){return this._playlists};
-  get searcher(){return this._searcher};
+  get artists(){return this._artists;}
+  get users(){return this._users;}
+  get playlists(){return this._playlists;}
+  get searcher(){return this._searcher;}
 
-  set artists(artistList){return this._artists = artistList};
-  set users(userList){return this._users = userList};
-  set playlists(playlistList){return this._playlists = playlistList};
+  set artists(artistList){return this._artists = artistList;}
+  set users(userList){return this._users = userList;}
+  set playlists(playlistList){return this._playlists = playlistList;}
 
   //ADD METHODS:
   addArtist(artistData){return this._abmHandler.createArtist(this, artistData);}
@@ -40,28 +47,35 @@ class UNQfy {
   removeArtist(artistId){this._abmHandler.deleteArtist(this, artistId);}
   removeAlbum(albumId){this._abmHandler.deleteAlbum(this, albumId);}
   removeTrack(trackId){this._abmHandler.deleteTrack(this, trackId);}
+  removePlaylist(playlistId){this._playlistGenerator.removePlaylist(this, playlistId);}
 
   //GET METHODS:
+  searchByName(aString){return this._searcher.searchByName(this, aString);}
   getArtistById(id){return this._searcher.searchArtist(this._artists, id);}
   getAlbumById(id){return this._searcher.searchAlbum(this._artists, id);}
   getTrackById(id){return this._searcher.searchTrack(this._artists, id);}
-  getUserById(id){return this._searcher.searchUser(this._users, id);} //FALTA ESTE METODO 
+  getUserById(id){return this._searcher.searchUser(this._users, id);} 
   getPlaylistById(id){return this._searcher.searchPlaylist(this._playlists, id);}
-  getTracksMatchingGenres(genres){return this._searcher.searchTracksByGenres(this.artists, genres);}
-  getTracksMatchingArtist(artistName){return this._searcher.searchTracksByArtist(this.artists, artistName);}
+  getTracksMatchingGenres(genres){return this._searcher.searchTracksByGenres(this._artists, genres);}
+  getTracksMatchingArtist(anArtist){return this._searcher.searchTracksByArtist(this._artists, anArtist.id);}
   getPartialMatchingTracks(partialName){return this._searcher.searchTracks(this._artists, partialName);}
   getPartialMatchingAlbums(partialName){return this._searcher.searchAlbums(this._artists, partialName);}
   getPartialMatchingArtists(partialName){return this._searcher.searchArtists(this._artists, partialName);}
-  artistTopThreeTracks(artistId){return this._searcher.topThreeListenedTracksByArtist(this, artistId);} //TENGO QUE PASAR THIS SI O SI
+  getPartialMatchingPlaylists(partialName){return this._searcher.searchPlaylists(this._playlists, partialName);}
+  artistTopThreeTracks(artistId){return this._searcher.topThreeListenedTracksByArtist(this._artists, this._users, artistId);}
+  timesListened(userId, trackId) {return this._searcher.timesListenedByUser(this, userId, trackId);}
+  listen(userId, trackId){return this._userHandler.listen(this, userId, trackId);}
 
-  //OTHER METHODS:
+  //USER METHODS
+  listenedTracks(userId) {return this._userHandler.listenedTracks(this, userId);}
+
+  //PLAYLIST METHODS:
   createPlaylist(name, genresToInclude, maxDuration){ 
-    return this._playlistGenerator.generate(name, maxDuration, genresToInclude, this);
-  }
-  
-  listen(userId, trackId){ // NO NECESITARIAMOS UN USER ADMINISTRATOR ????
-    let tempUser = this.getUserById(userId);
-    tempUser.listen();
+    return this._playlistGenerator.generate(
+      name,
+      maxDuration, 
+      genresToInclude, 
+      this);
   }
   
   //GIVEN METHODS:
@@ -78,12 +92,11 @@ class UNQfy {
   static load(filename) {
     const serializedData = fs.readFileSync(filename, {encoding: 'utf-8'});
     //COMPLETAR POR EL ALUMNO: Agregar a la lista todas las clases que necesitan ser instanciadas
-    const classes = [UNQfy];
+    const classes = [UNQfy, Artist, Album, Track, Playlist, User, PlaylistGenerator, AbmHandler, Searcher, UserHandler];
     return picklify.unpicklify(JSON.parse(serializedData), classes);
   }
 }
 
-// COMPLETAR POR EL ALUMNO: exportar todas las clases que necesiten ser utilizadas desde un modulo cliente
 module.exports = {
   UNQfy,
 };
