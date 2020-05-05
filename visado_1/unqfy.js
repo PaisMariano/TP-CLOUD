@@ -63,7 +63,7 @@ class UNQfy {
   getPartialMatchingArtists(partialName){return this._searcher.searchArtists(this._artists, partialName);}
   getPartialMatchingPlaylists(partialName){return this._searcher.searchPlaylists(this._playlists, partialName);}
   artistTopThreeTracks(artistId){return this._searcher.topThreeListenedTracksByArtist(this._artists, this._users, artistId);}
-  timesListened(userId, trackId) {return this._searcher.timesListened(this, userId, trackId);}
+  timesListened(userId, trackId) {return this._searcher.timesListenedByUser(this, userId, trackId);}
   listen(userId, trackId){return this._userHandler.listen(this, userId, trackId);}
 
   //USER METHODS

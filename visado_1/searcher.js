@@ -175,7 +175,7 @@ class Searcher {
     return tempUser.getListenedTracks();
   }
   
-  timesListened(unqfy, userId, trackId){
+  timesListenedByUser(unqfy, userId, trackId){
     const tempUser  = unqfy.getUserById(userId);
     const tempTrack = unqfy.getTrackById(trackId);
     return tempUser.timesListened(tempTrack);

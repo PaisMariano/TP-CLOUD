@@ -1,5 +1,6 @@
 # 1er Visado Taller de Desarrollo Web/Cloud
 **UML UNQFY**
+
 ![alt text](https://github.com/PaisMariano/TP-CLOUD/blob/DEV/UML/Visado1%20UML%20UNQFY.png)
 ------
 
@@ -32,7 +33,7 @@ A continuación se listan los comandos que acepta y cómo usarlos:
 
 #### Creadores
 
-- **Agregar artista** 
+1. **Agregar artista** 
 
   ```bash
   node main.js addArtist <name> <country>
@@ -40,7 +41,7 @@ A continuación se listan los comandos que acepta y cómo usarlos:
 
   Reemplazar `name` por el nombre del artista y `country` por el país del mismo.
 
-- **Agregar album**
+2. **Agregar album**
 
   ```bash
   node main.js addAlbum <name> <artistId> <year>
@@ -48,15 +49,15 @@ A continuación se listan los comandos que acepta y cómo usarlos:
 
   Reemplazar `name` por el nombre del album, `artistId` por el id del artista autor del mismo, `year` por su año de lanzamiento.
 
-- **Agregar track**
+3. **Agregar track**
 
   ```bash
-  node main.js addTrack <name> <albumId> <duration> [<genre1> <genre2> .. <genreN>]
+  node main.js addTrack <name> <albumId> <duration> <genre1> <genre2> .. <genreN>
   ```
 
   Reemplazar `name` por el nombre del track, `albumId` por el id de su album, `duration` por la duración del mismo, y el resto de los argumentos van a ser leidos como géneros (`genre1`, `genre2`, etc).
 
-- **Agregar usuario**
+4. **Agregar usuario**
 
   ```bash
   node main.js addUser <name>
@@ -193,7 +194,7 @@ A continuación se listan los comandos que acepta y cómo usarlos:
 - **Buscar tracks por géneros**
 
   ```bash
-  node main.js getTracksByGenres [<genre1> <genre2> .. <genreN>]
+  node main.js getTracksByGenres <genre1> <genre2> .. <genreN>
   ```
 
   Reemplazar `genre1`, `genre2` y todos los siguientes argumentos por los géneros.
@@ -269,7 +270,7 @@ A continuación se listan los comandos que acepta y cómo usarlos:
 - **Generar un playlist con duración máxima y de ciertos géneros**
 
   ```bash
-  node main.js generatePlaylist <name> <maxDuration> [<genre1> <genre2> .. <genreN>]
+  node main.js generatePlaylist <name> <maxDuration> <genre1> <genre2> .. <genreN>
   ```
 
   Reemplazar `name` por el nombre del playlist, `maxDuration` por la duración máxima de la misma, y `genre1`, `genre2`, etc y todos los siguientes argumentos por los géneros posibles para sus tracks.
