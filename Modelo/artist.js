@@ -1,5 +1,5 @@
 const creds = require('./spotifyCreds.json');
-const rp = require('request-promise');
+var rp = require('request-promise');
 
 class Artist {
   constructor(anID, aName, aCountry) {
@@ -42,7 +42,7 @@ class Artist {
     //   throw NoMatchingArtistNameException(artistName);
     // }
 
-    const uriEncodedArtistName = encodeURI(artist.name);
+    const uriEncodedArtistName = encodeURI(this.name);
     const options = {
       url: 'https://api.spotify.com/v1/search',
       qs: {

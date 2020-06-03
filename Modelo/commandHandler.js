@@ -338,7 +338,7 @@ class CommandHandler {
         }, 
         argsRequired: 3
       },
-      //formato: populateAlbumsForArtist artistName
+      //formato: populateAlbumsForArtist artistId
       populateAlbumsForArtist: {
         funct: function(unqfy) {
           try {
