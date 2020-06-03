@@ -65,6 +65,8 @@ class UNQfy {
   artistTopThreeTracks(artistId){return this._searcher.topThreeListenedTracksByArtist(this._artists, this._users, artistId);}
   timesListened(userId, trackId) {return this._searcher.timesListenedByUser(this, userId, trackId);}
   listen(userId, trackId){return this._userHandler.listen(this, userId, trackId);}
+  getLyrics(trackId){return this.getTrackById(trackId).getLyrics();}
+  getAlbumsForArtist(artistId){return this.getArtistById(artistId).albums;}
 
   //USER METHODS
   listenedTracks(userId) {return this._userHandler.listenedTracks(this, userId);}
@@ -76,6 +78,10 @@ class UNQfy {
       maxDuration, 
       genresToInclude, 
       this);
+  }
+
+  populateAlbumsForArtist(artistId) {
+    this.getArtistById(artistId).populateAlbumsForArtist(this);
   }
   
   //GIVEN METHODS:

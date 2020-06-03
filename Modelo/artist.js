@@ -1,3 +1,6 @@
+const creds = require('./spotifyCreds.json');
+const rp = require('request-promise');
+
 class Artist {
   constructor(anID, aName, aCountry) {
     this._id = anID;
@@ -26,6 +29,51 @@ class Artist {
   }
   set albums(aList) {
     return (this._albums = aList);
+  }
+
+  populateAlbumsForArtist(unqfy) {
+        // Esto era si tomaba "artistName" por parametro, en lugar de "artistId"
+
+    // const artistsFound = this._searcher.searchArtists(this._artists, artistName).length;
+    // const artist;
+    // if (artistsFound.length > 0) {
+    //   artist = artistsFound[0];
+    // } else {
+    //   throw NoMatchingArtistNameException(artistName);
+    // }
+
+    const uriEncodedArtistName = encodeURI(artist.name);
+    const options = {
+      url: 'https://api.spotify.com/v1/search',
+      qs: {
+        q: uriEncodedArtistName,
+        type:'artist'
+      },
+      headers: { Authorization: 'Bearer ' + creds.access_token },
+      json: true,
+    };
+
+    rp.get(options)
+    .then((artistSearchResponse) => JSON.parse(artistSearchResponse).artists.items[0].id)
+    .then((artistId) => {
+      rp.get({
+        url: 'https://api.spotify.com/v1/artists/' + artistId + '/albums',
+        qs: {
+          q: uriEncodedArtistName,
+          type:'artist'
+        },
+        headers: { Authorization: 'Bearer ' + creds.access_token },
+        json: true,
+      })
+      .then((albumsResponse) => {
+        // armar un arreglo de albums que sean {name: "asd", year: 1234}
+        const albums = JSON.parse(albumsResponse).items.map(albumRes => {
+          return {name: albumRes.name, year: albumRes.release_date.slice(0, 4)}
+        });
+
+        albums.forEach(album => unqfy.addAlbum(artistId, album));
+      })
+    })
   }
 }
 

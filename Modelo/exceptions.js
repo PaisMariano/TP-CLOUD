@@ -5,6 +5,12 @@ class MissingArgsInCommand extends Error {
   }
 }
 
+class NoMatchingArtistNameException extends Error {
+  constructor(artistName) {
+    super(`No se encontro un usuario por nombre ${artistName}.`)
+  }
+}
+
 class NoMatchingAnythingException extends Error {
   constructor(anythingId, anything) {
     super(`No existe un ${anything} con id ${anythingId}.`);
