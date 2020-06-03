@@ -338,6 +338,41 @@ class CommandHandler {
         }, 
         argsRequired: 3
       },
+      //formato: populateAlbumsForArtist artistName
+      populateAlbumsForArtist: {
+        funct: function(unqfy) {
+          try {
+            unqfy.populateAlbumsForArtist(Number(commandArgs[1]));
+            printer.printEntity(`Artista actualizado.`);
+          } catch (exception) {
+            printer.printException(exception);
+          }
+        }, 
+        argsRequired: 2
+      },
+      //formato: getLyrics trackId
+      getLyrics: {
+        funct: function(unqfy) {
+          try {
+            printer.printMessage(`El track con id ${commandArgs[1]} tiene el siguiente
+             lyric ${unqfy.getLyrics(Number(commandArgs[1]))}`);
+          } catch (exception) {
+            printer.printException(exception);
+          }
+        },
+        argsRequired: 2
+      },
+      //formato: getAlbumsForArtist artistId
+      getAlbumsForArtist: {
+        funct: function(unqfy) {
+          try {
+            printer.printMessage(`${unqfy.getAlbumsForArtist(Number(commandArgs[1]))}`);
+          } catch (exception) {
+            printer.printException(exception);
+          }
+        },
+        argsRequired: 2
+      },
     };
   }
 
