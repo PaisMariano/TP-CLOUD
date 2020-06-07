@@ -1,5 +1,5 @@
 #!/bin/bash
-cd ../visado_1;
+cd ../Modelo;
 
 #Creación de Artistas
 node main.js addArtist "La Renga" "Argentina"

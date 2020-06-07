@@ -30,7 +30,11 @@ class Artist {
   set albums(aList) {
     return (this._albums = aList);
   }
-
+  noArtistIncludedAlbums(){
+    return this.albums.map(album => {
+      return { id: album.id, name: album.name, year: album.year }
+    });
+  }
   populateAlbumsForArtist(unqfy) {
         // Esto era si tomaba "artistName" por parametro, en lugar de "artistId"
 
