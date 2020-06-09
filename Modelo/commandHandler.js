@@ -1,5 +1,6 @@
 const Printer = require('./printer');
 const {MissingArgsInCommand} = require('./exceptions');
+const main = require('./main');
 
 class CommandHandler {
   constructor(args) {
@@ -343,7 +344,6 @@ class CommandHandler {
         funct: function(unqfy) {
           try {
             unqfy.populateAlbumsForArtist(Number(commandArgs[1]));
-            printer.printEntity(`Artista actualizado.`);
           } catch (exception) {
             printer.printException(exception);
           }
@@ -381,7 +381,8 @@ class CommandHandler {
     if (this.validCommands().hasOwnProperty(commandId)) {
       try {
         this.hasNotEnoughArgsException(this.validCommands()[commandId].argsRequired);
-        this.validCommands()[commandId].funct(unqfy);
+        this.validCommands()[commandId].funct(unqfy, commandId);
+        this.saveUnqfyUnlessAsyncCmd(unqfy);
       } catch (exception) {
         // console.log('Excepcion atrapada en executeCommand');
         this._printer.printException(exception);
@@ -394,6 +395,12 @@ class CommandHandler {
   hasNotEnoughArgsException(amount) {
     if(this._command.length < amount) {
       throw new MissingArgsInCommand(this._command[0]);
+    }
+  }
+
+  saveUnqfyUnlessAsyncCmd(unqfy, cmdId) {
+    if (cmdId != "populateAlbumsForArtist") { // aca podemos validar todos los comandos asincronos, o preguntarle al comando si es asincrono
+      main.saveUNQfy(unqfy)
     }
   }
 }

@@ -154,3 +154,8 @@ console.log(`Listening on ${PORT}`);
 server = app.listen(PORT);
 
 login();
+
+module.exports = {
+  CLIENT_ID,
+  CLIENT_SECRET
+};

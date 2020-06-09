@@ -68,7 +68,7 @@ class UNQfy {
   getLyrics(trackId){return this.getTrackById(trackId).getLyrics();}
   getAlbumsForArtist(artistId){return this.getArtistById(artistId).noArtistIncludedAlbums();}
 
-  //USER METHODS
+  //USER METHODS:
   listenedTracks(userId) {return this._userHandler.listenedTracks(this, userId);}
 
   //PLAYLIST METHODS:
@@ -80,6 +80,7 @@ class UNQfy {
       this);
   }
 
+  //CUSTOM METHODS:
   populateAlbumsForArtist(artistId) {
     this.getArtistById(artistId).populateAlbumsForArtist(this);
   }

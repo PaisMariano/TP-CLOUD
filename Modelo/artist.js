@@ -1,5 +1,11 @@
 const creds = require('./spotifyCreds.json');
 var rp = require('request-promise');
+const Printer = require('./printer');
+const printer = new Printer();
+const main = require('./main');
+// const {CLIENT_ID, CLIENT_SECRET} = require('./generateSpotifyCredentials');
+const CLIENT_ID = 'd38a0113ad3e429c9dbfe4ed483a2874'; // Your client id
+const CLIENT_SECRET = 'a9176cac20db4393877e6a0ffb99bff3'; // Your secret
 
 class Artist {
   constructor(anID, aName, aCountry) {
@@ -36,15 +42,7 @@ class Artist {
     });
   }
   populateAlbumsForArtist(unqfy) {
-        // Esto era si tomaba "artistName" por parametro, en lugar de "artistId"
-
-    // const artistsFound = this._searcher.searchArtists(this._artists, artistName).length;
-    // const artist;
-    // if (artistsFound.length > 0) {
-    //   artist = artistsFound[0];
-    // } else {
-    //   throw NoMatchingArtistNameException(artistName);
-    // }
+    const selfArtist = this;
 
     const uriEncodedArtistName = encodeURI(this.name);
     const options = {
@@ -57,26 +55,42 @@ class Artist {
       json: true,
     };
 
-    rp.get(options)
-    .then((artistSearchResponse) => JSON.parse(artistSearchResponse).artists.items[0].id)
-    .then((artistId) => {
-      rp.get({
-        url: 'https://api.spotify.com/v1/artists/' + artistId + '/albums',
-        qs: {
-          q: uriEncodedArtistName,
-          type:'artist'
-        },
-        headers: { Authorization: 'Bearer ' + creds.access_token },
-        json: true,
+    const refreshOptions = {
+      uri: 'https://accounts.spotify.com/api/token',
+      headers: { Authorization: 'Basic ' + (new Buffer(CLIENT_ID + ':' + CLIENT_SECRET).toString('base64')) },
+      form: {
+        grant_type: 'refresh_token',
+        refresh_token: creds.refresh_token
+      },
+      json: true
+    };
+   
+    rp.post(refreshOptions)
+    .then(function (parsedBody) {
+      options.headers = { Authorization: 'Bearer ' + parsedBody.access_token };
+      rp.get(options)
+      .then((artistSearchResponse) => artistSearchResponse.artists.items[0].id)
+      .then((artistId) => {
+        options.url = 'https://api.spotify.com/v1/artists/' + artistId + '/albums'
+        rp.get(options)
+        .then((albumsResponse) => {
+          // armar un arreglo de albums que sean {name: "asd", year: 1234}
+          const albums = albumsResponse.items.map(albumRes => {
+            return {name: albumRes.name, year: albumRes.release_date.slice(0, 4)}
+          });
+  
+          try {
+            albums.forEach(album => unqfy.addAlbum(selfArtist.id, album));
+            main.saveUNQfy(unqfy);
+            printer.printEntity('Artista actualizado', selfArtist);
+          } catch (exception) {
+            printer.printException(exception);
+          }
+        })
       })
-      .then((albumsResponse) => {
-        // armar un arreglo de albums que sean {name: "asd", year: 1234}
-        const albums = JSON.parse(albumsResponse).items.map(albumRes => {
-          return {name: albumRes.name, year: albumRes.release_date.slice(0, 4)}
-        });
-
-        albums.forEach(album => unqfy.addAlbum(artistId, album));
-      })
+    })
+    .catch(function (err) {
+      printer.printException(exception);
     })
   }
 }
