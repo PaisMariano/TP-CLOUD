@@ -38,7 +38,7 @@ class Artist {
   }
   noArtistIncludedAlbums(){
     return this.albums.map(album => {
-      return { id: album.id, name: album.name, year: album.year }
+      return { id: album.id, name: album.name, year: album.year, tracks: album.tracks.map(track => track.toJSON()) }
     });
   }
   populateAlbumsForArtist(unqfy) {
@@ -92,6 +92,15 @@ class Artist {
     .catch(function (err) {
       printer.printException(exception);
     })
+  }
+
+  toJSON() {
+    return {
+      id: this.id,
+      name: this.name,
+      country: this.country,
+      albums: this.albums.map(album => album.toJSON())
+    }
   }
 }
 

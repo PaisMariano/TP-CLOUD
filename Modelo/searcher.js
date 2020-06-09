@@ -60,7 +60,7 @@ class Searcher {
   }
 
   searchArtists(artistList, partialName) {
-    return artistList.filter((artist) => artist.name.includes(partialName));
+    return artistList.filter((artist) => artist.name.toLowerCase().includes(partialName.toLowerCase()));
   }
 
   searchAlbums(artistList, partialName) {
@@ -68,7 +68,7 @@ class Searcher {
 
     artistList.forEach((artist) => {
       albums = albums.concat(
-        artist.albums.filter((album) => album.name.includes(partialName))
+        artist.albums.filter((album) => album.name.toLowerCase().includes(partialName.toLowerCase()))
       );
     });
     return albums;
@@ -80,7 +80,7 @@ class Searcher {
     artistList.forEach((artist) => {
       artist.albums.forEach((album) => {
         tracks = tracks.concat(
-          album.tracks.filter((track) => track.name.includes(partialName))
+          album.tracks.filter((track) => track.name.toLowerCase().includes(partialName.toLowerCase()))
         );
       });
     });

@@ -57,16 +57,14 @@ class Track {
         rp.get(
         options
         ).then((response) => {
-        // var header = response.message.header;
-        // var body   = response.message.body;
-        // if (header.status_code !== 200)
-        //   throw new Error('status code != 200');
-        // if (body.track_list.length === 0)
-        //   throw new Error('No hay tracks con ese nombre.');
-        
-        // return body.track_list[0].track_id;
-        //hardcodie un ID de musixmatch para traer info porque no me esta funcionando el getTrack.
-        return 15953433
+        var header = response.message.header;
+        var body   = response.message.body;
+        if (header.status_code !== 200)
+          throw new Error('status code != 200');
+        if (body.track_list.length === 0)
+          throw new Error('No hay tracks con ese nombre.');
+
+        return body.track_list[0].track.track_id
         }).then((trackId) => {
           return rp.get({
             uri: BASE_URL + getTrackLyrics,
@@ -88,6 +86,17 @@ class Track {
         })
     }else{
       console.log(this._lyrics);
+    }
+  }
+
+  toJSON() {
+    return {
+      id        : this.id,
+      name      : this.name,
+      genres    : this.genres,
+      duration  : this.duration,
+      // album     : this.album,
+      lyrics    : this.lyrics
     }
   }
 }

@@ -31,5 +31,14 @@ class Album {
   set tracks(aList) {
     return (this._tracks = aList);
   }
+
+  toJSON() {
+    return {
+      id: this.id,
+      name: this.name,
+      year: this.year,
+      tracks: this.tracks.map(track => track.toJSON())
+    }
+  }
 }
 module.exports = Album;

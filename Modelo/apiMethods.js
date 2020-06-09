@@ -24,20 +24,20 @@ router.route('/artists/:artistId')
     const artistId = parseInt(req.params.artistId);
     let tmpArtist;
     let tmpAlbums;
-    try {        
+    try {
         tmpArtist = unqfy.getArtistById(artistId);
         tmpAlbums = unqfy.getAlbumsForArtist(artistId);
     }catch(err){
         errorHandler(err, req, res);
     }
     res.status("200");
-    res.json({  
-        message : 'Se encontró el artista.', 
+    res.json({
+        message : 'Se encontró el artista.',
         body : {
             "id":       tmpArtist._id,
             "name":     tmpArtist._name,
             "country":  tmpArtist._country,
-            "albums":   tmpAlbums 
+            "albums":   tmpAlbums
         }
     });
 })
@@ -63,7 +63,7 @@ router.route('/artists/:artistId')
             "id":       tmpArtist._id,
             "name":     tmpArtist._name,
             "country":  tmpArtist._country,
-            "albums":   tmpArtist._albums 
+            "albums":   tmpArtist._albums.map(album => album.toJSON())
         }
     });
 })
@@ -84,14 +84,14 @@ router.route('/artists/:artistId')
 //ENDPOINT /artists/
 router.route('/artists')
 .get((req, res) => {
-    const data = req.body;
+    let name = req.query.name;
     let tmpArtists;
     //Valido si me pasaron el campo name.
-    if (data.name === undefined){
-        data['name'] = "";
+    if (name === undefined){
+        name = ""
     }
     try{
-        tmpArtists = unqfy.getPartialMatchingArtists(data.name);
+        tmpArtists = unqfy.getPartialMatchingArtists(name);
     }catch{
         errorHandler(err, req, res);
     }
@@ -100,7 +100,7 @@ router.route('/artists')
     res.json({  
         message : 'Artista/s encontrado/s.', 
         body : {
-            "artists" : tmpArtists
+            "artists" : tmpArtists.map(artist => artist.toJSON())
         }
     });  
 })
@@ -124,7 +124,7 @@ router.route('/artists')
             "id":       tmpArtist._id ,
             "name":     tmpArtist._name,
             "country":  tmpArtist._country,
-            "albums":   tmpArtist._albums 
+            "albums":   tmpArtist._albums.map(album => album.toJSON())
         }
     });
 })
@@ -146,18 +146,22 @@ router.route('/albums/:albumId')
             "id":       tmpAlbum._id,
             "name":     tmpAlbum._name,
             "year":     tmpAlbum._year,
-            "tracks":   tmpAlbum._tracks 
+            "tracks":   tmpAlbum._tracks.map(track => track.toJSON())
         }
     });
 })
 .patch((req, res) => {
     const data = req.body;
     const albumId = parseInt(req.params.artistId);
-    if (data.name === undefined || data.year === undefined){
+    if (data.year === undefined){
         let err = new BadRequestException();
         errorHandler(err, req, res);
     }
     try{
+        data = {
+            name: unqfy.getAlbumById(albumId).name,
+            ...data
+        }
         unqfy.updateAlbum(albumId, data);
     }catch{
         errorHandler(err, req, res);
@@ -166,13 +170,13 @@ router.route('/albums/:albumId')
     let tmpAlbum = unqfy.getAlbumById(albumId);
     
     res.status("200");
-    res.json({  
-        message : 'Se actualizó el álbum correctamente.', 
+    res.json({
+        message : 'Se actualizó el álbum correctamente.',
         body : {
             "id":       tmpAlbum._id,
             "name":     tmpAlbum._name,
             "year":     tmpAlbum._year,
-            "tracks":   tmpAlbum._tracks 
+            "tracks":   tmpAlbum._tracks.map(track => track.toJSON())
         }
     });
 })
@@ -193,14 +197,14 @@ router.route('/albums/:albumId')
 //ENDPOINT /albums/
 router.route('/albums')
 .get((req, res) => {
-    const data = req.body;
+    let name = req.query.name;
     let tmpAlbums;
     //Valido si me pasaron el campo name.
-    if (data.name === undefined){
-        data['name'] = "";
+    if (name === undefined){
+        name = "";
     }
     try{
-        tmpAlbums = unqfy.getPartialMatchingAlbums(data.name);
+        tmpAlbums = unqfy.getPartialMatchingAlbums(name);
     }catch{
         errorHandler(err, req, res);
     }
@@ -209,14 +213,14 @@ router.route('/albums')
     res.json({  
         message : 'Álbum/s encontrado/s.', 
         body : {
-            "artists" : tmpAlbums
+            "albums" : tmpAlbums.map(album => album.toJSON())
         }
     });  
 })
 .post((req, res) => {
     const data = req.body;
     let tmpAlbum;
-    if (data.name === undefined || data.year === undefined){
+    if (data.artistId === undefined || data.name === undefined || data.year === undefined){
         let err = new BadRequestException();
         errorHandler(err, req, res);
     }
@@ -234,10 +238,11 @@ router.route('/albums')
             "id":       tmpAlbum._id ,
             "name":     tmpAlbum._name,
             "year":     tmpAlbum._year,
-            "tracks":   tmpAlbum._tracks 
+            "tracks":   tmpAlbum._tracks.map(track => track.toJSON())
         }
     });
 })
+
 router.route('/tracks/:trackId/lyrics')
 .get((req, res) => {
     const trackId = parseInt(req.params.trackId);
@@ -252,15 +257,96 @@ router.route('/tracks/:trackId/lyrics')
     res.json({  
         message : 'Se encontró el track.', 
         body : {
-            "id":       tmpTrack._id,
+            /*"id":       tmpTrack._id,*/
             "name":     tmpTrack._name,
             "lyrics":   tmpTrack._lyrics,
         }
     });
 })
 
+//ENDPOINT /playlists/<playlistId>
+router.route('/playlists/:playlistId')
+.get((req, res) => {
+//     const albumId = parseInt(req.params.albumId);
+//     let tmpAlbum;
+//     try {  
+//         tmpAlbum = unqfy.getAlbumById(albumId);
+//     }catch(err){
+//         errorHandler(err, req, res);
+//     }
+//     res.status("200");
+//     res.json({  
+//         message : 'Se encontró el album.', 
+//         body : {
+//             "id":       tmpAlbum._id,
+//             "name":     tmpAlbum._name,
+//             "year":     tmpAlbum._year,
+//             "tracks":   tmpAlbum._tracks.map(track => track.toJSON())
+//         }
+//     });
+})
+.delete((req, res) => {
+    // const albumId = parseInt(req.params.albumId);
+    // try{
+    //     unqfy.removeAlbum(albumId);
+    // }catch{
+    //     errorHandler(err, req, res);
+    // }
+    
+    // res.status("204");
+    // res.send({
+    //     success: true
+    // })
+})
 
+//ENDPOINT /api/playlists
+router.route('/playlists')
+.get((req, res) => {
+//     let name = req.query.name;
+//     let tmpAlbums;
+//     //Valido si me pasaron el campo name.
+//     if (name === undefined){
+//         name = "";
+//     }
+//     try{
+//         tmpAlbums = unqfy.getPartialMatchingAlbums(name);
+//     }catch{
+//         errorHandler(err, req, res);
+//     }
 
+//     res.status("200");
+//     res.json({  
+//         message : 'Álbum/s encontrado/s.', 
+//         body : {
+//             "albums" : tmpAlbums.map(album => album.toJSON())
+//         }
+//     });  
+})
+.post((req, res) => {
+    // const data = req.body;
+    // let tmpAlbum;
+    // if (data.artistId === undefined || data.name === undefined || data.year === undefined){
+    //     let err = new BadRequestException();
+    //     errorHandler(err, req, res);
+    // }
+    // try {
+    //     tmpAlbum = unqfy.addAlbum(data.artistId, data);
+    // }catch(err){
+    //     let err2 = new ResourceNotFoundException();
+    //     errorHandler(err2, req, res);
+    // }
+
+    // res.status("201");
+    // res.json({  
+    //     message : 'Se creó el álbum correctamente.', 
+    //     body : {
+    //         "id":       tmpAlbum._id ,
+    //         "name":     tmpAlbum._name,
+    //         "year":     tmpAlbum._year,
+    //         "tracks":   tmpAlbum._tracks.map(track => track.toJSON())
+    //     }
+    // });
+})
 
 
 
