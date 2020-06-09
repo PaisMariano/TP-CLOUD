@@ -2,7 +2,6 @@ const creds = require('./spotifyCreds.json');
 var rp = require('request-promise');
 const Printer = require('./printer');
 const printer = new Printer();
-const main = require('./main');
 // const {CLIENT_ID, CLIENT_SECRET} = require('./generateSpotifyCredentials');
 const CLIENT_ID = 'd38a0113ad3e429c9dbfe4ed483a2874'; // Your client id
 const CLIENT_SECRET = 'a9176cac20db4393877e6a0ffb99bff3'; // Your secret
@@ -36,11 +35,7 @@ class Artist {
   set albums(aList) {
     return (this._albums = aList);
   }
-  noArtistIncludedAlbums(){
-    return this.albums.map(album => {
-      return { id: album.id, name: album.name, year: album.year, tracks: album.tracks.map(track => track.toJSON()) }
-    });
-  }
+
   populateAlbumsForArtist(unqfy) {
     const selfArtist = this;
 
@@ -81,7 +76,7 @@ class Artist {
   
           try {
             albums.forEach(album => unqfy.addAlbum(selfArtist.id, album));
-            main.saveUNQfy(unqfy);
+            unqfy.save('data.json');
             printer.printEntity('Artista actualizado', selfArtist);
           } catch (exception) {
             printer.printException(exception);

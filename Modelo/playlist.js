@@ -26,5 +26,14 @@ class Playlist {
   hasTrack(aTrack) {
     return this.tracks.includes(aTrack);
   }
+
+  toJSON() {
+    return {
+      id: this.id,
+      name: this.name,
+      duration: this.duration,
+      tracks: this.tracks.map(map => map.toJSON())
+    }
+  }
 }
 module.exports = Playlist;

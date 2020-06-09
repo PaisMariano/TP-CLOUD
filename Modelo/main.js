@@ -52,7 +52,6 @@ function main() {
   const commandHandler = new CommandHandler(process.argv.slice(2));
   const unqfy = getUNQfy();
   commandHandler.executeCommand(unqfy);
-  // saveUNQfy(unqfy); delegado a commandHandler (o al metodo asincrono correspondiente)
 
 
   // let dataArtist = {name : "La Renga", country: "Argentina"};
@@ -83,6 +82,5 @@ function main() {
   // //process.argv.forEach(argument => console.log(argument)); 
   
 }
-module.exports.saveUNQfy = saveUNQfy;
 
 main();

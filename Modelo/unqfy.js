@@ -66,7 +66,8 @@ class UNQfy {
   timesListened(userId, trackId) {return this._searcher.timesListenedByUser(this, userId, trackId);}
   listen(userId, trackId){return this._userHandler.listen(this, userId, trackId);}
   getLyrics(trackId){return this.getTrackById(trackId).getLyrics();}
-  getAlbumsForArtist(artistId){return this.getArtistById(artistId).noArtistIncludedAlbums();}
+  getAlbumsForArtist(artistId){return this.getArtistById(artistId).albums;}
+  getPlaylistsCustomSearch(searchData){return this._searcher.searchPlaylistsCustom(this._playlists, searchData);}
 
   //USER METHODS:
   listenedTracks(userId) {return this._userHandler.listenedTracks(this, userId);}

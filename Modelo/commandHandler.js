@@ -1,6 +1,5 @@
 const Printer = require('./printer');
 const {MissingArgsInCommand} = require('./exceptions');
-const main = require('./main');
 
 class CommandHandler {
   constructor(args) {
@@ -400,7 +399,7 @@ class CommandHandler {
 
   saveUnqfyUnlessAsyncCmd(unqfy, cmdId) {
     if (cmdId != "populateAlbumsForArtist") { // aca podemos validar todos los comandos asincronos, o preguntarle al comando si es asincrono
-      main.saveUNQfy(unqfy)
+      unqfy.save('data.json');
     }
   }
 }

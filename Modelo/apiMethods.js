@@ -2,7 +2,7 @@ let express     = require('express');        // import express
 let app         = express();                 // define our app using express
 let router      = express.Router();
 let bodyParser  = require('body-parser');
-let unqmod      = require('./unqfy.js');
+let unqmod      = require('./unqfy');
 const {
     NoMatchingArtistException, 
     NoMatchingAlbumException,
@@ -37,7 +37,7 @@ router.route('/artists/:artistId')
             "id":       tmpArtist._id,
             "name":     tmpArtist._name,
             "country":  tmpArtist._country,
-            "albums":   tmpAlbums
+            "albums":   tmpAlbums.map(album => album.toJSON())
         }
     });
 })
@@ -113,6 +113,7 @@ router.route('/artists')
     }
     try {
         tmpArtist = unqfy.addArtist(data);
+        unqfy.save('data.json');
     }catch(err){
         errorHandler(err, req, res);
     }
@@ -142,12 +143,7 @@ router.route('/albums/:albumId')
     res.status("200");
     res.json({  
         message : 'Se encontró el album.', 
-        body : {
-            "id":       tmpAlbum._id,
-            "name":     tmpAlbum._name,
-            "year":     tmpAlbum._year,
-            "tracks":   tmpAlbum._tracks.map(track => track.toJSON())
-        }
+        body : tmpAlbum.toJSON()
     });
 })
 .patch((req, res) => {
@@ -267,86 +263,85 @@ router.route('/tracks/:trackId/lyrics')
 //ENDPOINT /playlists/<playlistId>
 router.route('/playlists/:playlistId')
 .get((req, res) => {
-//     const albumId = parseInt(req.params.albumId);
-//     let tmpAlbum;
-//     try {  
-//         tmpAlbum = unqfy.getAlbumById(albumId);
-//     }catch(err){
-//         errorHandler(err, req, res);
-//     }
-//     res.status("200");
-//     res.json({  
-//         message : 'Se encontró el album.', 
-//         body : {
-//             "id":       tmpAlbum._id,
-//             "name":     tmpAlbum._name,
-//             "year":     tmpAlbum._year,
-//             "tracks":   tmpAlbum._tracks.map(track => track.toJSON())
-//         }
-//     });
+    const playlistId = parseInt(req.params.playlistId);
+    let tmpPlaylist;
+    try {
+        tmpPlaylist = unqfy.getPlaylistById(playlistId);
+    } catch(err) {
+        errorHandler(err, req, res);
+    }
+
+    res.status(200);
+    res.json({
+        message: 'Se encontró la playlist.',
+        body: tmpPlaylist.toJSON()
+    });
 })
 .delete((req, res) => {
-    // const albumId = parseInt(req.params.albumId);
-    // try{
-    //     unqfy.removeAlbum(albumId);
-    // }catch{
-    //     errorHandler(err, req, res);
-    // }
+    const playlistId = parseInt(req.params.playlistId);
+    try {
+        unqfy.removePlaylist(playlistId);
+    } catch (err) {
+        errorHandler(err, req, res);
+    }
     
-    // res.status("204");
-    // res.send({
-    //     success: true
-    // })
+    res.status(204);
+    res.send({
+        success: true
+    });
 })
 
-//ENDPOINT /api/playlists
-router.route('/playlists')
-.get((req, res) => {
+// //ENDPOINT /api/playlists
+// router.route('/playlists')
+// .get((req, res) => {
 //     let name = req.query.name;
-//     let tmpAlbums;
-//     //Valido si me pasaron el campo name.
-//     if (name === undefined){
-//         name = "";
-//     }
-//     try{
-//         tmpAlbums = unqfy.getPartialMatchingAlbums(name);
-//     }catch{
-//         errorHandler(err, req, res);
-//     }
+//     let durationLT = req.query.durationLT;
+//     let durationGT = req.query.durationGT;
+// //     let name = req.query.name;
+// //     let tmpAlbums;
+// //     //Valido si me pasaron el campo name.
+// //     if (name === undefined){
+// //         name = "";
+// //     }
+// //     try{
+// //         tmpAlbums = unqfy.getPartialMatchingAlbums(name);
+// //     }catch{
+// //         errorHandler(err, req, res);
+// //     }
 
-//     res.status("200");
-//     res.json({  
-//         message : 'Álbum/s encontrado/s.', 
-//         body : {
-//             "albums" : tmpAlbums.map(album => album.toJSON())
-//         }
-//     });  
-})
-.post((req, res) => {
-    // const data = req.body;
-    // let tmpAlbum;
-    // if (data.artistId === undefined || data.name === undefined || data.year === undefined){
-    //     let err = new BadRequestException();
-    //     errorHandler(err, req, res);
-    // }
-    // try {
-    //     tmpAlbum = unqfy.addAlbum(data.artistId, data);
-    // }catch(err){
-    //     let err2 = new ResourceNotFoundException();
-    //     errorHandler(err2, req, res);
-    // }
+// //     res.status("200");
+// //     res.json({  
+// //         message : 'Álbum/s encontrado/s.', 
+// //         body : {
+// //             "albums" : tmpAlbums.map(album => album.toJSON())
+// //         }
+// //     });  
+// })
+// .post((req, res) => {
+//     // const data = req.body;
+//     // let tmpAlbum;
+//     // if (data.artistId === undefined || data.name === undefined || data.year === undefined){
+//     //     let err = new BadRequestException();
+//     //     errorHandler(err, req, res);
+//     // }
+//     // try {
+//     //     tmpAlbum = unqfy.addAlbum(data.artistId, data);
+//     // }catch(err){
+//     //     let err2 = new ResourceNotFoundException();
+//     //     errorHandler(err2, req, res);
+//     // }
 
-    // res.status("201");
-    // res.json({  
-    //     message : 'Se creó el álbum correctamente.', 
-    //     body : {
-    //         "id":       tmpAlbum._id ,
-    //         "name":     tmpAlbum._name,
-    //         "year":     tmpAlbum._year,
-    //         "tracks":   tmpAlbum._tracks.map(track => track.toJSON())
-    //     }
-    // });
-})
+//     // res.status("201");
+//     // res.json({  
+//     //     message : 'Se creó el álbum correctamente.', 
+//     //     body : {
+//     //         "id":       tmpAlbum._id ,
+//     //         "name":     tmpAlbum._name,
+//     //         "year":     tmpAlbum._year,
+//     //         "tracks":   tmpAlbum._tracks.map(track => track.toJSON())
+//     //     }
+//     // });
+// })
 
 
 
@@ -383,7 +378,7 @@ function errorHandler(err, req, res) {
     console.error(err); // imprimimos el error en consola
     // Chequeamos que tipo de error es y actuamos en consecuencia
     switch(true){
-        case (err instanceof NoMatchingArtistException || err instanceof NoMatchingAlbumException):
+        case (err instanceof NoMatchingArtistException || err instanceof NoMatchingAlbumException || err instanceof NoMatchingPlaylistException):
             res.status("404");
             res.json({
                 status: "404",
@@ -421,10 +416,10 @@ function errorHandler(err, req, res) {
 
         default :
             // continua con el manejador de errores por defecto
-            res.status("404");
+            res.status("500");
             res.json({  
-                status: "404",
-                errorCode: "RESOURCE_NOT_FOUND"
+                status: "500",
+                errorCode: "INTERNAL_SERVER_ERROR"
             });
         }
     }

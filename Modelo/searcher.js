@@ -180,5 +180,17 @@ class Searcher {
     const tempTrack = unqfy.getTrackById(trackId);
     return tempUser.timesListened(tempTrack);
   }
+
+  searchPlaylistsCustom(playlists, searchData) {
+    // si esta name: filtrar las que tengan ese nombre (parcial)
+    // si esta durationLT: filtrar las que tengan duracion menor a..
+    // si esta durationGT: filtrar las que tengan duracion mayor a..
+
+    return playlists.filter(playlst => playlst)
+
+    if (searchData.name === undefined) {
+
+    }
+  }
 }
 module.exports = Searcher;
