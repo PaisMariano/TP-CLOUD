@@ -1,6 +1,11 @@
 let express     = require('express');        // import express
 let app         = express();                 // define our app using express
-let router      = express.Router();
+let artists     = express.Router();
+let albums      = express.Router();
+let tracks      = express.Router();
+let playlists   = express.Router();
+let users       = express.Router();
+let other       = express.Router();
 let bodyParser  = require('body-parser');
 let unqmod      = require('./unqfy');
 const {
@@ -19,29 +24,21 @@ let port = 8081;        // set our port
 let unqfy = new unqmod.UNQfy();
 
 //ENDPOINT /artists/<artistID>
-router.route('/artists/:artistId')
+artists.route('/artists/:artistId')
 .get((req, res) => {
     const artistId = parseInt(req.params.artistId);
     let tmpArtist;
-    let tmpAlbums;
     try {
         tmpArtist = unqfy.getArtistById(artistId);
-        tmpAlbums = unqfy.getAlbumsForArtist(artistId);
     }catch(err){
         errorHandler(err, req, res);
     }
-    res.status("200");
-    res.json({
-        message : 'Se encontró el artista.',
-        body : {
-            "id":       tmpArtist._id,
-            "name":     tmpArtist._name,
-            "country":  tmpArtist._country,
-            "albums":   tmpAlbums.map(album => album.toJSON())
-        }
-    });
+    res.status(200);
+    res.json(
+        tmpArtist.toJSON()
+    );
 })
-.patch((req, res) => {
+.put((req, res) => {
     const data = req.body;
     const artistId = parseInt(req.params.artistId);
     let tmpArtist;
@@ -52,37 +49,31 @@ router.route('/artists/:artistId')
     try{
         unqfy.updateArtist(artistId, data);
         tmpArtist = unqfy.getArtistById(artistId);
-    }catch{
+    }catch(err){
         errorHandler(err, req, res);
     }    
     
-    res.status("200");
-    res.json({  
-        message : 'Se actualizó el artista correctamente.', 
-        body : {
-            "id":       tmpArtist._id,
-            "name":     tmpArtist._name,
-            "country":  tmpArtist._country,
-            "albums":   tmpArtist._albums.map(album => album.toJSON())
-        }
-    });
+    res.status(200);
+    res.json(
+        tmpArtist.toJSON()        
+    );
 })
 .delete((req, res) => {
     const artistId = parseInt(req.params.artistId);
     try{
         unqfy.removeArtist(artistId);
-    }catch{
+    }catch(err){
         errorHandler(err, req, res);
     }
     
-    res.status("204");
+    res.status(204);
     res.send({
         success: true
     })
 })
 
 //ENDPOINT /artists/
-router.route('/artists')
+artists.route('/artists')
 .get((req, res) => {
     let name = req.query.name;
     let tmpArtists;
@@ -92,17 +83,14 @@ router.route('/artists')
     }
     try{
         tmpArtists = unqfy.getPartialMatchingArtists(name);
-    }catch{
+    }catch(err){
         errorHandler(err, req, res);
     }
 
-    res.status("200");
-    res.json({  
-        message : 'Artista/s encontrado/s.', 
-        body : {
-            "artists" : tmpArtists.map(artist => artist.toJSON())
-        }
-    });  
+    res.status(200);
+    res.json(
+        tmpArtists.map(artist => artist.toJSON())
+    );  
 })
 .post((req, res) => {
     const data = req.body;
@@ -118,20 +106,14 @@ router.route('/artists')
         errorHandler(err, req, res);
     }
 
-    res.status("201");
-    res.json({  
-        message : 'Se creó el artista correctamente.', 
-        body : {
-            "id":       tmpArtist._id ,
-            "name":     tmpArtist._name,
-            "country":  tmpArtist._country,
-            "albums":   tmpArtist._albums.map(album => album.toJSON())
-        }
-    });
+    res.status(201);
+    res.json(
+        tmpArtist.toJSON()
+    );
 })
 
 //ENDPOINT /albums/<albumId>
-router.route('/albums/:albumId')
+albums.route('/albums/:albumId')
 .get((req, res) => {
     const albumId = parseInt(req.params.albumId);
     let tmpAlbum;
@@ -140,58 +122,48 @@ router.route('/albums/:albumId')
     }catch(err){
         errorHandler(err, req, res);
     }
-    res.status("200");
-    res.json({  
-        message : 'Se encontró el album.', 
-        body : tmpAlbum.toJSON()
-    });
+    res.status(200);
+    res.json(
+        tmpAlbum.toJSON()
+    );
 })
 .patch((req, res) => {
     const data = req.body;
-    const albumId = parseInt(req.params.artistId);
+    const albumId = parseInt(req.params.albumId);
     if (data.year === undefined){
         let err = new BadRequestException();
         errorHandler(err, req, res);
     }
-    try{
-        data = {
-            name: unqfy.getAlbumById(albumId).name,
-            ...data
-        }
+    try{        
+        data.name = unqfy.getAlbumById(albumId).name;
         unqfy.updateAlbum(albumId, data);
-    }catch{
+    }catch(err){
         errorHandler(err, req, res);
     }
 
     let tmpAlbum = unqfy.getAlbumById(albumId);
     
-    res.status("200");
-    res.json({
-        message : 'Se actualizó el álbum correctamente.',
-        body : {
-            "id":       tmpAlbum._id,
-            "name":     tmpAlbum._name,
-            "year":     tmpAlbum._year,
-            "tracks":   tmpAlbum._tracks.map(track => track.toJSON())
-        }
-    });
+    res.status(200);
+    res.json(
+        tmpAlbum.toJSON()
+    );
 })
 .delete((req, res) => {
     const albumId = parseInt(req.params.albumId);
     try{
         unqfy.removeAlbum(albumId);
-    }catch{
+    }catch(err){
         errorHandler(err, req, res);
     }
     
-    res.status("204");
+    res.status(204);
     res.send({
         success: true
     })
 })
 
 //ENDPOINT /albums/
-router.route('/albums')
+albums.route('/albums')
 .get((req, res) => {
     let name = req.query.name;
     let tmpAlbums;
@@ -201,17 +173,14 @@ router.route('/albums')
     }
     try{
         tmpAlbums = unqfy.getPartialMatchingAlbums(name);
-    }catch{
+    }catch(err){
         errorHandler(err, req, res);
     }
 
-    res.status("200");
-    res.json({  
-        message : 'Álbum/s encontrado/s.', 
-        body : {
-            "albums" : tmpAlbums.map(album => album.toJSON())
-        }
-    });  
+    res.status(200);
+    res.json(
+        tmpAlbums.map(album => album.toJSON())
+    );  
 })
 .post((req, res) => {
     const data = req.body;
@@ -223,23 +192,21 @@ router.route('/albums')
     try {
         tmpAlbum = unqfy.addAlbum(data.artistId, data);
     }catch(err){
-        let err2 = new ResourceNotFoundException();
-        errorHandler(err2, req, res);
+        if (err instanceof AlreadyExistsAlbumException){
+            errorHandler(err, req, res);
+        }else{
+            err = new ResourceNotFoundException();
+            errorHandler(err, req, res);
+        }
     }
 
-    res.status("201");
-    res.json({  
-        message : 'Se creó el álbum correctamente.', 
-        body : {
-            "id":       tmpAlbum._id ,
-            "name":     tmpAlbum._name,
-            "year":     tmpAlbum._year,
-            "tracks":   tmpAlbum._tracks.map(track => track.toJSON())
-        }
-    });
+    res.status(201);
+    res.json(
+        tmpAlbum.toJSON()
+    );
 })
 
-router.route('/tracks/:trackId/lyrics')
+tracks.route('/tracks/:trackId/lyrics')
 .get((req, res) => {
     const trackId = parseInt(req.params.trackId);
     let tmpTrack;
@@ -249,11 +216,9 @@ router.route('/tracks/:trackId/lyrics')
     }catch(err){
         errorHandler(err, req, res);
     }
-    res.status("200");
-    res.json({  
-        message : 'Se encontró el track.', 
+    res.status(200);
+    res.json({
         body : {
-            /*"id":       tmpTrack._id,*/
             "name":     tmpTrack._name,
             "lyrics":   tmpTrack._lyrics,
         }
@@ -261,7 +226,7 @@ router.route('/tracks/:trackId/lyrics')
 })
 
 //ENDPOINT /playlists/<playlistId>
-router.route('/playlists/:playlistId')
+playlists.route('/playlists/:playlistId')
 .get((req, res) => {
     const playlistId = parseInt(req.params.playlistId);
     let tmpPlaylist;
@@ -281,7 +246,7 @@ router.route('/playlists/:playlistId')
     const playlistId = parseInt(req.params.playlistId);
     try {
         unqfy.removePlaylist(playlistId);
-    } catch (err) {
+    } catch(err) {
         errorHandler(err, req, res);
     }
     
@@ -349,39 +314,42 @@ router.route('/playlists/:playlistId')
 
 //Estos deberian quedar abajo de todo.
 
-router.route('*')
+other.route('*')
 .get((req, res) => {
-    let err;
+    let err = new NoRouteException();
     errorHandler(err, req, res);
 })
 .post((req, res) => {
-    let err;
+    let err = new NoRouteException();
     errorHandler(err, req, res);
 })
 .delete((req, res) => {
-    let err;
+    let err = new NoRouteException();
     errorHandler(err, req, res);
 })
 .patch((req, res) => {
-    let err;
+    let err = new NoRouteException();
     errorHandler(err, req, res);
 })
 
 app.use(bodyParser.json());
-app.use('/api', router);
+app.use('/api', artists, albums, tracks, playlists, users);
+app.use('*', other);
 app.listen(port);
 app.use(errorHandler);
 
 console.log("Escuchando en el puerto %d...", port)
 
 function errorHandler(err, req, res) {
-    console.error(err); // imprimimos el error en consola
     // Chequeamos que tipo de error es y actuamos en consecuencia
     switch(true){
-        case (err instanceof NoMatchingArtistException || err instanceof NoMatchingAlbumException || err instanceof NoMatchingPlaylistException):
-            res.status("404");
+        case (err instanceof NoMatchingArtistException || 
+                err instanceof NoMatchingAlbumException || 
+                err instanceof NoMatchingPlaylistException ||
+                err instanceof NoRouteException):
+            res.status(404);
             res.json({
-                status: "404",
+                status: 404,
                 errorCode: "RESOURCE_NOT_FOUND"
             });
         case (err instanceof ResourceNotFoundException):
@@ -391,9 +359,9 @@ function errorHandler(err, req, res) {
                 errorCode: err.errorCode})
 
         case (err instanceof AlreadyExistsArtistException || err instanceof AlreadyExistsAlbumException):
-            res.status("409");
+            res.status(409);
             res.json({  
-                status: "409",
+                status: 409,
                 errorCode: "RESOURCE_ALREADY_EXISTS"
             });
         case (err instanceof BadRequestException):
@@ -416,9 +384,9 @@ function errorHandler(err, req, res) {
 
         default :
             // continua con el manejador de errores por defecto
-            res.status("500");
+            res.status(500);
             res.json({  
-                status: "500",
+                status: 500,
                 errorCode: "INTERNAL_SERVER_ERROR"
             });
         }
@@ -449,4 +417,10 @@ class InvalidInputError extends APIError {
         super('InvalidInputError', 400, 'INVALID_INPUT_DATA');
     }  
 }
- 
+
+class NoRouteException extends APIError {
+    constructor() {
+        super('NoRouteException', 404, 'RESOURCE_NOT_FOUND');
+    }  
+}
+
