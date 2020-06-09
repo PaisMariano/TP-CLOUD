@@ -366,7 +366,7 @@ class CommandHandler {
       getAlbumsForArtist: {
         funct: function(unqfy) {
           try {
-            printer.printMessage(`${unqfy.getAlbumsForArtist(Number(commandArgs[1]))}`);
+            printer.printArray(`Albumes del artista con id ${commandArgs[1]}`, unqfy.getAlbumsForArtist(Number(commandArgs[1])));
           } catch (exception) {
             printer.printException(exception);
           }
@@ -382,7 +382,7 @@ class CommandHandler {
       try {
         this.hasNotEnoughArgsException(this.validCommands()[commandId].argsRequired);
         this.validCommands()[commandId].funct(unqfy, commandId);
-        this.saveUnqfyUnlessAsyncCmd(unqfy);
+        this.saveUnqfyUnlessAsyncCmd(unqfy, commandId);
       } catch (exception) {
         // console.log('Excepcion atrapada en executeCommand');
         this._printer.printException(exception);

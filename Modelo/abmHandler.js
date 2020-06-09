@@ -41,7 +41,8 @@ class AbmHandler {
   createAlbum(unqfy, artistId, albumData) {
     const tempArtist = unqfy.getArtistById(artistId);
     if (unqfy.searcher.existsAlbumNamed(tempArtist.albums, albumData.name)) {
-      throw new AlreadyExistsAlbumException(albumData.name, artistId);
+      // throw new AlreadyExistsAlbumException(albumData.name, artistId);
+      return; // necesario porque spotify trae mas de 1 album con el mismo nombre para 1 artista
     }
 
     this._albumId = this._albumId + 1;
