@@ -41,8 +41,7 @@ class AbmHandler {
   createAlbum(unqfy, artistId, albumData) {
     const tempArtist = unqfy.getArtistById(artistId);
     if (unqfy.searcher.existsAlbumNamed(tempArtist.albums, albumData.name)) {
-      // throw new AlreadyExistsAlbumException(albumData.name, artistId);
-      return; // necesario porque spotify trae mas de 1 album con el mismo nombre para 1 artista
+      throw new AlreadyExistsAlbumException(albumData.name, artistId);
     }
 
     this._albumId = this._albumId + 1;
@@ -97,6 +96,8 @@ class AbmHandler {
     tempTrack.duration = trackData.duration;
   }
   deleteArtist(unqfy, artistId) {
+    unqfy.getArtistById(artistId);
+
     this.genericDeleteTracks(
       unqfy,
       artistId,
@@ -115,6 +116,8 @@ class AbmHandler {
   }
 
   deleteAlbum(unqfy, albumId) {
+    unqfy.getAlbumById(albumId);
+
     this.genericDeleteTracks(
       unqfy,
       albumId,
@@ -129,6 +132,8 @@ class AbmHandler {
     });
   }
   deleteTrack(unqfy, trackId) {
+    unqfy.getTrackById(trackId);
+
     this.genericDeleteTracks(unqfy, trackId, 'users', 'listenedTracks', 'id');
     this.genericDeleteTracks(unqfy, trackId, 'playlists', 'tracks', 'id');
     unqfy.artists = unqfy.artists.map((art) => {
