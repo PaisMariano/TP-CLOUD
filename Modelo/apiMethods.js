@@ -237,10 +237,9 @@ playlists.route('/playlists/:playlistId')
     }
 
     res.status(200);
-    res.json({
-        message: 'Se encontró la playlist.',
-        body: tmpPlaylist.toJSON()
-    });
+    res.json(
+        tmpPlaylist.toJSON()
+    );
 })
 .delete((req, res) => {
     const playlistId = parseInt(req.params.playlistId);
@@ -256,57 +255,71 @@ playlists.route('/playlists/:playlistId')
     });
 })
 
-// //ENDPOINT /api/playlists
-// router.route('/playlists')
-// .get((req, res) => {
-//     let name = req.query.name;
-//     let durationLT = req.query.durationLT;
-//     let durationGT = req.query.durationGT;
-// //     let name = req.query.name;
-// //     let tmpAlbums;
-// //     //Valido si me pasaron el campo name.
-// //     if (name === undefined){
-// //         name = "";
-// //     }
-// //     try{
-// //         tmpAlbums = unqfy.getPartialMatchingAlbums(name);
-// //     }catch{
-// //         errorHandler(err, req, res);
-// //     }
+//ENDPOINT /playlists/
+playlists.route('/playlists')
+.get((req, res) => {
+    let name = req.query.name;
+    let durationLT = req.query.durationLT;
+    let durationGT = req.query.durationGT;
 
-// //     res.status("200");
-// //     res.json({  
-// //         message : 'Álbum/s encontrado/s.', 
-// //         body : {
-// //             "albums" : tmpAlbums.map(album => album.toJSON())
-// //         }
-// //     });  
-// })
-// .post((req, res) => {
-//     // const data = req.body;
-//     // let tmpAlbum;
-//     // if (data.artistId === undefined || data.name === undefined || data.year === undefined){
-//     //     let err = new BadRequestException();
-//     //     errorHandler(err, req, res);
-//     // }
-//     // try {
-//     //     tmpAlbum = unqfy.addAlbum(data.artistId, data);
-//     // }catch(err){
-//     //     let err2 = new ResourceNotFoundException();
-//     //     errorHandler(err2, req, res);
-//     // }
+    if (name === undefined && durationLT === undefined && durationGT === undefined) {
+        let err = new BadRequestException();
+        errorHandler(err, req, res);
+    }
 
-//     // res.status("201");
-//     // res.json({  
-//     //     message : 'Se creó el álbum correctamente.', 
-//     //     body : {
-//     //         "id":       tmpAlbum._id ,
-//     //         "name":     tmpAlbum._name,
-//     //         "year":     tmpAlbum._year,
-//     //         "tracks":   tmpAlbum._tracks.map(track => track.toJSON())
-//     //     }
-//     // });
-// })
+    let tmpPlaylists;
+    try {
+        tmpPlaylists = unqfy.getPlaylistsCustomSearch({
+            name,
+            durationLT: parseInt(durationLT),
+            durationGT: parseInt(durationGT)
+        });
+    } catch (err) {
+        errorHandler(err, req, res);
+    }
+
+    res.status(200);
+    res.json(
+        tmpPlaylists.map(playlist => playlist.toJSON())
+    )
+})
+.post((req, res) => {
+    const name = req.query.name;
+    const maxDuration = req.query.maxDuration;
+    const genres = req.query.genres;
+    const tracks = req.query.tracks;
+
+    let tmpPlaylist;
+
+    if (name !== undefined && tracks !== undefined) {
+        try {
+            tmpPlaylist = unqfy.addPlaylist({name, tracks});
+        } catch (error) {
+            if(error instanceof NoMatchingTrackException) {
+                const err = new ResourceNotFoundException();
+                errorHandler(err, req, res);
+            } else {
+                const err = new BadRequestException();
+                errorHandler(err, req, res);
+            }
+        }
+    } else if (maxDuration !== undefined && name !== undefined && genres !== undefined){
+        try {
+            tmpPlaylist = unqfy.createPlaylist(name, genres, parseInt(maxDuration));
+        } catch (error) {
+            const err = new BadRequestException();
+            errorHandler(err, req, res);
+        }
+    } else {
+        const err = new BadRequestException();
+        errorHandler(err, req, res);
+    }
+
+    res.status(201);
+    res.json(
+        tmpPlaylist.toJSON()
+    )
+})
 
 
 
@@ -360,7 +373,7 @@ function errorHandler(err, req, res) {
 
         case (err instanceof AlreadyExistsArtistException || err instanceof AlreadyExistsAlbumException):
             res.status(409);
-            res.json({  
+            res.json({
                 status: 409,
                 errorCode: "RESOURCE_ALREADY_EXISTS"
             });
@@ -372,20 +385,20 @@ function errorHandler(err, req, res) {
         case (err instanceof InvalidInputError):
             res.status(err.status);
             res.json({
-                status: err.status, 
-                errorCode: err.errorCode}); 
+                status: err.status,
+                errorCode: err.errorCode});
 
         case (err !== undefined && err.type === 'entity.parse.failed'):
             // body-parser error para JSON invalido
             res.status(err.status);
             res.json({
-                status: err.status, 
+                status: err.status,
                 errorCode: 'INVALID_JSON'});
 
         default :
             // continua con el manejador de errores por defecto
             res.status(500);
-            res.json({  
+            res.json({
                 status: 500,
                 errorCode: "INTERNAL_SERVER_ERROR"
             });
