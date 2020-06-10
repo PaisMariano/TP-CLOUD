@@ -5,10 +5,13 @@ class PlaylistGenerator {
     this._playlistId = 0;
   }
   createPlaylist(unqfy, playlistData) {
+    const realTracks = playlistData.tracks.map(trackId => unqfy.getTrackById(parseInt(trackId)));
+    const totalDuration = realTracks.reduce((accum, curr) => accum + curr.duration, 0);
     const tempPlaylist = new Playlist(
       ++this._playlistId,
       playlistData.name,
-      playlistData.tracks
+      totalDuration,
+      realTracks
     );
     unqfy.playlists.push(tempPlaylist);
     return tempPlaylist;
@@ -53,6 +56,7 @@ class PlaylistGenerator {
     return tempList;
   }
   removePlaylist(unqfy, playlistId) {
+    unqfy.getPlaylistById(playlistId);
     unqfy.playlists = unqfy.playlists.filter(playlist => playlist.id !== playlistId);
   }
 }

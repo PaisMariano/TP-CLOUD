@@ -194,7 +194,7 @@ class Searcher {
       return searchData.durationGT === undefined || playlist.duration > searchData.durationGT;
     }
 
-    return playlists.filter(playlst => nameFilter(playlst) && durationLTFilter(playlst) && durationGTFilter(playlst));
+    return playlists.filter(playlst => (nameFilter(playlst) && durationLTFilter(playlst) && durationGTFilter(playlst)));
   }
 }
 module.exports = Searcher;
