@@ -182,15 +182,19 @@ class Searcher {
   }
 
   searchPlaylistsCustom(playlists, searchData) {
-    // si esta name: filtrar las que tengan ese nombre (parcial)
-    // si esta durationLT: filtrar las que tengan duracion menor a..
-    // si esta durationGT: filtrar las que tengan duracion mayor a..
-
-    return playlists.filter(playlst => playlst)
-
-    if (searchData.name === undefined) {
-
+    function nameFilter(playlist) {
+      return searchData.name === undefined || playlist.name.toLowerCase().includes(searchData.name.toLowerCase());
     }
+
+    function durationLTFilter(playlist) {
+      return searchData.durationLT === undefined || playlist.duration < searchData.durationLT;
+    }
+
+    function durationGTFilter(playlist) {
+      return searchData.durationGT === undefined || playlist.duration > searchData.durationGT;
+    }
+
+    return playlists.filter(playlst => nameFilter(playlst) && durationLTFilter(playlst) && durationGTFilter(playlst));
   }
 }
 module.exports = Searcher;

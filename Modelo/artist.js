@@ -1,10 +1,4 @@
-const creds = require('./spotifyCreds.json');
-var rp = require('request-promise');
-const Printer = require('./printer');
-const printer = new Printer();
-// const {CLIENT_ID, CLIENT_SECRET} = require('./generateSpotifyCredentials');
-const CLIENT_ID = 'd38a0113ad3e429c9dbfe4ed483a2874'; // Your client id
-const CLIENT_SECRET = 'a9176cac20db4393877e6a0ffb99bff3'; // Your secret
+const SpotifyHelper = require('./external api helpers/spotifyHelper');
 
 class Artist {
   constructor(anID, aName, aCountry) {
@@ -37,56 +31,18 @@ class Artist {
   }
 
   populateAlbumsForArtist(unqfy) {
-    const selfArtist = this;
+    const spotifyHelper = new SpotifyHelper(unqfy, this);
+    spotifyHelper.populateAlbumsForArtist();
+  }
 
-    const uriEncodedArtistName = encodeURI(this.name);
-    const options = {
-      url: 'https://api.spotify.com/v1/search',
-      qs: {
-        q: uriEncodedArtistName,
-        type:'artist'
-      },
-      headers: { Authorization: 'Bearer ' + creds.access_token },
-      json: true,
-    };
-
-    const refreshOptions = {
-      uri: 'https://accounts.spotify.com/api/token',
-      headers: { Authorization: 'Basic ' + (new Buffer(CLIENT_ID + ':' + CLIENT_SECRET).toString('base64')) },
-      form: {
-        grant_type: 'refresh_token',
-        refresh_token: creds.refresh_token
-      },
-      json: true
-    };
-   
-    rp.post(refreshOptions)
-    .then(function (parsedBody) {
-      options.headers = { Authorization: 'Bearer ' + parsedBody.access_token };
-      rp.get(options)
-      .then((artistSearchResponse) => artistSearchResponse.artists.items[0].id)
-      .then((artistId) => {
-        options.url = 'https://api.spotify.com/v1/artists/' + artistId + '/albums'
-        rp.get(options)
-        .then((albumsResponse) => {
-          // armar un arreglo de albums que sean {name: "asd", year: 1234}
-          const albums = albumsResponse.items.map(albumRes => {
-            return {name: albumRes.name, year: albumRes.release_date.slice(0, 4)}
-          });
-  
-          try {
-            albums.forEach(album => unqfy.addAlbum(selfArtist.id, album));
-            unqfy.save('data.json');
-            printer.printEntity('Artista actualizado', selfArtist);
-          } catch (exception) {
-            printer.printException(exception);
-          }
-        })
-      })
-    })
-    .catch(function (err) {
+  addAlbums({albumsToAdd, unqfy}) {
+    try {
+      albumsToAdd.forEach(album => unqfy.addAlbum(self.id, album));
+      unqfy.save('data.json');
+      printer.printEntity('Artista actualizado', self._artist);
+    } catch (exception) {
       printer.printException(exception);
-    })
+    }
   }
 
   toJSON() {
