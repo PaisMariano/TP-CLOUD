@@ -491,7 +491,16 @@ other.route('*')
     return;
 })
 
-app.use(bodyParser.json());
+app.use((req, res, next) => {
+    bodyParser.json()(req, res, err => {
+        if (err) {
+            err = new BadRequestException();
+            errorHandler(err, req, res);
+            return;
+        }
+        next();
+    });
+});
 app.use('/api', artists, albums, tracks, playlists, users);
 app.use('*', other);
 app.listen(port);
