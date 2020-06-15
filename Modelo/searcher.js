@@ -52,6 +52,7 @@ class Searcher {
   }
 
   searchUser(usersList, userId) {
+
     const user = usersList.find((user) => user.id === userId);
     if (user === undefined) {
       throw new NoMatchingUserException(userId);
