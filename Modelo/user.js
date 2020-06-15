@@ -14,13 +14,15 @@ class User {
   get listenedTracks() {
     return this._listenedTracks;
   }
+  set name(aName){
+    this._name = aName;
+  }
   set listenedTracks(aList) {
     return (this._listenedTracks = aList);
   }
 
   listen(aTrack) {
     this._listenedTracks.push(aTrack);
-    // console.log(this._name, 'está escuchando', aTrack.name);
   }
 
   getListenedTracks() {
@@ -33,6 +35,14 @@ class User {
       (accum, track) => accum + (track === aTrack ? 1 : 0),
       0
     );
+  }
+
+  toJSON() {
+    return {
+      id: this.id,
+      name: this.name,
+      listenedTracks: this._listenedTracks.map(track => track.toJSON())
+    }
   }
 }
 module.exports = User;

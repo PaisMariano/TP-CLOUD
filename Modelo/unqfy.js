@@ -42,12 +42,14 @@ class UNQfy {
   updateArtist(artistId, artistData){this._abmHandler.updateArtist(this, artistId, artistData);}
   updateAlbum(albumId, albumData){this._abmHandler.updateAlbum(this, albumId, albumData);}
   updateTrack(trackId, trackData){this._abmHandler.updateTrack(this, trackId, trackData);}
+  updateUser(userId, userData){this._userHandler.updateUser(this, userId, userData);}
   
   //REMOVE METHODS:
   removeArtist(artistId){this._abmHandler.deleteArtist(this, artistId);}
   removeAlbum(albumId){this._abmHandler.deleteAlbum(this, albumId);}
   removeTrack(trackId){this._abmHandler.deleteTrack(this, trackId);}
   removePlaylist(playlistId){this._playlistGenerator.removePlaylist(this, playlistId);}
+  removeUser(userId){this._userHandler.removeUser(this, userId);}
 
   //GET METHODS:
   searchByName(aString){return this._searcher.searchByName(this, aString);}

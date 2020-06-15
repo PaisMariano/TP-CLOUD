@@ -11,12 +11,10 @@ let unqmod      = require('./unqfy');
 const {
     NoMatchingArtistException, 
     NoMatchingAlbumException,
-    ResourceAlreadyExistsException,
     AlreadyExistsArtistException,
     AlreadyExistsAlbumException,
     NoMatchingTrackException, 
-    NoMatchingPlaylistException,
-    NoMatchingUserException
+    NoMatchingPlaylistException
 } = require('./exceptions');
 
 let port = 8081;        // set our port
@@ -32,6 +30,7 @@ artists.route('/artists/:artistId')
         tmpArtist = unqfy.getArtistById(artistId);
     }catch(err){
         errorHandler(err, req, res);
+        return;
     }
     res.status(200);
     res.json(
@@ -45,14 +44,16 @@ artists.route('/artists/:artistId')
     if (data.name === undefined || data.country === undefined){
         let err = new BadRequestException();
         errorHandler(err, req, res);
+        return;
     }
     try{
         unqfy.updateArtist(artistId, data);
         tmpArtist = unqfy.getArtistById(artistId);
     }catch(err){
         errorHandler(err, req, res);
+        return;
     }    
-    
+    unqfy.save('data.json');
     res.status(200);
     res.json(
         tmpArtist.toJSON()        
@@ -64,8 +65,9 @@ artists.route('/artists/:artistId')
         unqfy.removeArtist(artistId);
     }catch(err){
         errorHandler(err, req, res);
+        return;
     }
-    
+    unqfy.save('data.json');
     res.status(204);
     res.send({
         success: true
@@ -85,6 +87,7 @@ artists.route('/artists')
         tmpArtists = unqfy.getPartialMatchingArtists(name);
     }catch(err){
         errorHandler(err, req, res);
+        return;
     }
 
     res.status(200);
@@ -98,14 +101,15 @@ artists.route('/artists')
     if (data.name === undefined || data.country === undefined){
         let err = new BadRequestException();
         errorHandler(err, req, res);
+        return;
     }
     try {
         tmpArtist = unqfy.addArtist(data);
-        unqfy.save('data.json');
     }catch(err){
         errorHandler(err, req, res);
+        return;
     }
-
+    unqfy.save('data.json');
     res.status(201);
     res.json(
         tmpArtist.toJSON()
@@ -121,6 +125,7 @@ albums.route('/albums/:albumId')
         tmpAlbum = unqfy.getAlbumById(albumId);
     }catch(err){
         errorHandler(err, req, res);
+        return;
     }
     res.status(200);
     res.json(
@@ -133,16 +138,18 @@ albums.route('/albums/:albumId')
     if (data.year === undefined){
         let err = new BadRequestException();
         errorHandler(err, req, res);
+        return;
     }
     try{        
         data.name = unqfy.getAlbumById(albumId).name;
         unqfy.updateAlbum(albumId, data);
     }catch(err){
         errorHandler(err, req, res);
+        return;
     }
 
     let tmpAlbum = unqfy.getAlbumById(albumId);
-    
+    unqfy.save('data.json');
     res.status(200);
     res.json(
         tmpAlbum.toJSON()
@@ -154,8 +161,9 @@ albums.route('/albums/:albumId')
         unqfy.removeAlbum(albumId);
     }catch(err){
         errorHandler(err, req, res);
+        return;
     }
-    
+    unqfy.save('data.json');
     res.status(204);
     res.send({
         success: true
@@ -175,6 +183,7 @@ albums.route('/albums')
         tmpAlbums = unqfy.getPartialMatchingAlbums(name);
     }catch(err){
         errorHandler(err, req, res);
+        return;
     }
 
     res.status(200);
@@ -188,6 +197,7 @@ albums.route('/albums')
     if (data.artistId === undefined || data.name === undefined || data.year === undefined){
         let err = new BadRequestException();
         errorHandler(err, req, res);
+        return;
     }
     try {
         tmpAlbum = unqfy.addAlbum(data.artistId, data);
@@ -198,14 +208,35 @@ albums.route('/albums')
             err = new ResourceNotFoundException();
             errorHandler(err, req, res);
         }
+        return;
     }
-
+    unqfy.save('data.json');
     res.status(201);
     res.json(
         tmpAlbum.toJSON()
     );
 })
-
+tracks.route('/tracks')
+.post((req, res) => {
+    const data = req.body;
+    let tmpTrack;
+    if (data.name === undefined){
+        let err = new BadRequestException();
+        errorHandler(err, req, res);
+        return;
+    }
+    try {
+        tmpTrack = unqfy.addTrack(data.albumId, data);
+    }catch(err){
+        errorHandler(err, req, res);
+        return;
+    }
+    unqfy.save('data.json');
+    res.status(201);
+    res.json(
+        tmpTrack.toJSON()
+    );
+})
 tracks.route('/tracks/:trackId/lyrics')
 .get((req, res) => {
     const trackId = parseInt(req.params.trackId);
@@ -215,6 +246,7 @@ tracks.route('/tracks/:trackId/lyrics')
         tmpTrack = unqfy.getTrackById(trackId);
     }catch(err){
         errorHandler(err, req, res);
+        return;
     }
     res.status(200);
     res.json({
@@ -234,6 +266,7 @@ playlists.route('/playlists/:playlistId')
         tmpPlaylist = unqfy.getPlaylistById(playlistId);
     } catch(err) {
         errorHandler(err, req, res);
+        return;
     }
 
     res.status(200);
@@ -247,8 +280,9 @@ playlists.route('/playlists/:playlistId')
         unqfy.removePlaylist(playlistId);
     } catch(err) {
         errorHandler(err, req, res);
+        return;
     }
-    
+    unqfy.save('data.json');
     res.status(204);
     res.send({
         success: true
@@ -265,6 +299,7 @@ playlists.route('/playlists')
     if (name === undefined && durationLT === undefined && durationGT === undefined) {
         let err = new BadRequestException();
         errorHandler(err, req, res);
+        return;
     }
 
     let tmpPlaylists;
@@ -276,6 +311,7 @@ playlists.route('/playlists')
         });
     } catch (err) {
         errorHandler(err, req, res);
+        return;
     }
 
     res.status(200);
@@ -302,6 +338,7 @@ playlists.route('/playlists')
                 const err = new BadRequestException();
                 errorHandler(err, req, res);
             }
+            return;
         }
     } else if (maxDuration !== undefined && name !== undefined && genres !== undefined){
         try {
@@ -309,21 +346,126 @@ playlists.route('/playlists')
         } catch (error) {
             const err = new BadRequestException();
             errorHandler(err, req, res);
+            return;
         }
     } else {
         const err = new BadRequestException();
         errorHandler(err, req, res);
+        return;
     }
-
+    unqfy.save('data.json');
     res.status(201);
     res.json(
         tmpPlaylist.toJSON()
     )
 })
 
+//ENDPOINT /Users/
+users.route('/users/:userId')
+.get((req, res) => {
+    const userId = parseInt(req.params.userId);
+    let tmpUser;
+    try {  
+        tmpUser = unqfy.getUserById(userId);
+    }catch(err){
+        errorHandler(err, req, res);
+        return;
+    }
+    res.status(200);
+    res.json(
+        tmpUser.toJSON()
+    );
+})
+.put((req, res) => {
+    const data = req.body;
+    const userId = parseInt(req.params.userId);
+    let tmpUser;
+    try{
+        unqfy.updateUser(userId, data);
+        tmpUser = unqfy.getUserById(userId);
+    }catch(err){
+        errorHandler(err, req, res);
+        return;
+    }
+    unqfy.save('data.json');    
+    res.status(200);
+    res.json(
+        tmpUser.toJSON()
+    );
+})
+.delete((req, res) => {
+    const userId = parseInt(req.params.userId);
+    try{
+        unqfy.removeUser(userId);
+    }catch(err){
+        errorHandler(err, req, res);
+        return;
+    }
+    
+    res.status(204);
+    res.send({
+        success: true
+    })
+})
+users.route('/users')
+.post((req, res) => {
+    const data = req.body;
+    let tmpUser;
+    if (data.name === undefined || data.name === ""){
+        let err = new BadRequestException();
+        errorHandler(err, req, res);
+        return;
+    }
+    try {
+        tmpUser = unqfy.addUser(data);
+    }catch(err){
+        errorHandler(err, req, res);
+        return;
+    }
+    unqfy.save('data.json');
+    res.status(201);
+    res.json(
+        tmpUser.toJSON()
+    );
+})
 
-
-
+users.route('/users/:userId/listenings')
+.get((req, res) => {
+    const userId = parseInt(req.params.userId);
+    let tmpTracks;
+    try {        
+        tmpTracks = unqfy.listenedTracks(userId);
+    }catch(err){
+        errorHandler(err, req, res);
+        return;
+    }
+    res.status(200);
+    res.json(
+        tmpTracks.map(track => track.toJSON())
+    );
+})
+.post((req, res) => {
+    const userId = parseInt(req.params.userId);
+    const data = req.body;
+    let tmpTrack;
+    if (data.trackId === undefined){
+        let err = new BadRequestException();
+        errorHandler(err, req, res);
+        return;
+    }
+    try {
+        tmpTrack = unqfy.listen(userId, data.trackId);
+    }catch(err){
+        errorHandler(err, req, res);
+        return;
+    }
+    
+    unqfy.save('data.json');
+    res.status(201);
+    res.json(
+        tmpTrack.toJSON()
+    );
+})
 
 //Estos deberian quedar abajo de todo.
 
@@ -331,18 +473,22 @@ other.route('*')
 .get((req, res) => {
     let err = new NoRouteException();
     errorHandler(err, req, res);
+    return;
 })
 .post((req, res) => {
     let err = new NoRouteException();
     errorHandler(err, req, res);
+    return;
 })
 .delete((req, res) => {
     let err = new NoRouteException();
     errorHandler(err, req, res);
+    return;
 })
 .patch((req, res) => {
     let err = new NoRouteException();
     errorHandler(err, req, res);
+    return;
 })
 
 app.use(bodyParser.json());
@@ -365,36 +511,44 @@ function errorHandler(err, req, res) {
                 status: 404,
                 errorCode: "RESOURCE_NOT_FOUND"
             });
+            break;
         case (err instanceof ResourceNotFoundException):
             res.status(err.status);
             res.json({
                 status: err.status,
-                errorCode: err.errorCode})
-
-        case (err instanceof AlreadyExistsArtistException || err instanceof AlreadyExistsAlbumException):
+                errorCode: err.errorCode
+            });
+            break;
+        case (err instanceof AlreadyExistsArtistException || 
+                err instanceof AlreadyExistsAlbumException):
             res.status(409);
             res.json({
                 status: 409,
                 errorCode: "RESOURCE_ALREADY_EXISTS"
             });
+            break;
         case (err instanceof BadRequestException):
             res.status(err.status);
             res.json({
                 status: err.status,
-                errorCode: err.errorCode})
+                errorCode: err.errorCode
+            });
+            break;
         case (err instanceof InvalidInputError):
             res.status(err.status);
             res.json({
                 status: err.status,
-                errorCode: err.errorCode});
-
-        case (err !== undefined && err.type === 'entity.parse.failed'):
+                errorCode: err.errorCode
+            });
+            break;
+        case (err !== undefined && err.type === 'entity.parse.failed' || err instanceof SyntaxError):
             // body-parser error para JSON invalido
             res.status(err.status);
             res.json({
                 status: err.status,
-                errorCode: 'INVALID_JSON'});
-
+                errorCode: 'INVALID_JSON'
+            });
+            break;
         default :
             // continua con el manejador de errores por defecto
             res.status(500);
