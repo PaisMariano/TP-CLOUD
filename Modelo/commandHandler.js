@@ -1,5 +1,9 @@
 const Printer = require('./printer');
 const {MissingArgsInCommand} = require('./exceptions');
+const {
+  getUNQfy,
+  saveUNQfy
+} = require('./persistenceHelpers/picklifyJsonPersistence');
 
 class CommandHandler {
   constructor(args) {
@@ -374,7 +378,12 @@ class CommandHandler {
     };
   }
 
-  executeCommand(unqfy) {
+  executeCommand(maybeUNQfy) {
+    let unqfy = maybeUNQfy;
+    if (maybeUNQfy === undefined) {
+      unqfy = getUNQfy();
+    }
+    console.log("unqfy actual: ", unqfy);
     const commandId = this._command[0];
     if (this.validCommands().hasOwnProperty(commandId)) {
       try {
@@ -398,7 +407,7 @@ class CommandHandler {
 
   saveUnqfyUnlessAsyncCmd(unqfy, cmdId) {
     if (cmdId != "populateAlbumsForArtist" && cmdId != "getLyrics") { // aca podemos validar todos los comandos asincronos, o preguntarle al comando si es asincrono
-      unqfy.save('data.json');
+      saveUNQfy(unqfy);
     }
   }
 }

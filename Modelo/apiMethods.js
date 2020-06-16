@@ -1,25 +1,31 @@
-let express     = require('express');        // import express
-let app         = express();                 // define our app using express
-let artists     = express.Router();
-let albums      = express.Router();
-let tracks      = express.Router();
-let playlists   = express.Router();
-let users       = express.Router();
-let other       = express.Router();
-let bodyParser  = require('body-parser');
-let unqmod      = require('./unqfy');
+const express     = require('express');        // import express
+const app         = express();                 // define our app using express
+const artists     = express.Router();
+const albums      = express.Router();
+const tracks      = express.Router();
+const playlists   = express.Router();
+const users       = express.Router();
+const other       = express.Router();
+const bodyParser  = require('body-parser');
+// const unqmod      = require('./unqfy');
+// const {getUNQfy}    = require('./main');
+const { UNQfy } = require('./unqfy');
 const {
-    NoMatchingArtistException, 
+    getUNQfy,
+    saveUNQfy
+} = require('./persistenceHelpers/picklifyJsonPersistence');
+const {
+    NoMatchingArtistException,
     NoMatchingAlbumException,
     AlreadyExistsArtistException,
     AlreadyExistsAlbumException,
-    NoMatchingTrackException, 
+    NoMatchingTrackException,
     NoMatchingPlaylistException
 } = require('./exceptions');
 
-let port = 8081;        // set our port
+const port = 8081;        // set our port
 
-let unqfy = new unqmod.UNQfy();
+const unqfy = getUNQfy();
 
 //ENDPOINT /artists/<artistID>
 artists.route('/artists/:artistId')
@@ -99,7 +105,7 @@ artists.route('/artists')
     const data = req.body;
     let tmpArtist;
     if (data.name === undefined || data.country === undefined){
-        let err = new BadRequestException();
+        const err = new BadRequestException();
         errorHandler(err, req, res);
         return;
     }
@@ -136,7 +142,7 @@ albums.route('/albums/:albumId')
     const data = req.body;
     const albumId = parseInt(req.params.albumId);
     if (data.year === undefined){
-        let err = new BadRequestException();
+        const err = new BadRequestException();
         errorHandler(err, req, res);
         return;
     }
@@ -148,7 +154,7 @@ albums.route('/albums/:albumId')
         return;
     }
 
-    let tmpAlbum = unqfy.getAlbumById(albumId);
+    const tmpAlbum = unqfy.getAlbumById(albumId);
     unqfy.save('data.json');
     res.status(200);
     res.json(
@@ -195,7 +201,7 @@ albums.route('/albums')
     const data = req.body;
     let tmpAlbum;
     if (data.artistId === undefined || data.name === undefined || data.year === undefined){
-        let err = new BadRequestException();
+        const err = new BadRequestException();
         errorHandler(err, req, res);
         return;
     }
@@ -221,7 +227,7 @@ tracks.route('/tracks')
     const data = req.body;
     let tmpTrack;
     if (data.name === undefined){
-        let err = new BadRequestException();
+        const err = new BadRequestException();
         errorHandler(err, req, res);
         return;
     }
@@ -292,12 +298,12 @@ playlists.route('/playlists/:playlistId')
 //ENDPOINT /playlists/
 playlists.route('/playlists')
 .get((req, res) => {
-    let name = req.query.name;
-    let durationLT = req.query.durationLT;
-    let durationGT = req.query.durationGT;
+    const name = req.query.name;
+    const durationLT = req.query.durationLT;
+    const durationGT = req.query.durationGT;
 
     if (name === undefined && durationLT === undefined && durationGT === undefined) {
-        let err = new BadRequestException();
+        const err = new BadRequestException();
         errorHandler(err, req, res);
         return;
     }
@@ -412,7 +418,7 @@ users.route('/users')
     const data = req.body;
     let tmpUser;
     if (data.name === undefined || data.name === ""){
-        let err = new BadRequestException();
+        const err = new BadRequestException();
         errorHandler(err, req, res);
         return;
     }
@@ -449,12 +455,12 @@ users.route('/users/:userId/listenings')
     const data = req.body;
     let tmpTrack;
     if (data.trackId === undefined){
-        let err = new BadRequestException();
+        const err = new BadRequestException();
         errorHandler(err, req, res);
         return;
     }
     try {
-        tmpTrack = unqfy.listen(userId, data.trackId);
+        tmpTrack = unqfy.listen(userId, parseInt(data.trackId));
     }catch(err){
         errorHandler(err, req, res);
         return;
@@ -471,22 +477,22 @@ users.route('/users/:userId/listenings')
 
 other.route('*')
 .get((req, res) => {
-    let err = new NoRouteException();
+    const err = new NoRouteException();
     errorHandler(err, req, res);
     return;
 })
 .post((req, res) => {
-    let err = new NoRouteException();
+    const err = new NoRouteException();
     errorHandler(err, req, res);
     return;
 })
 .delete((req, res) => {
-    let err = new NoRouteException();
+    const err = new NoRouteException();
     errorHandler(err, req, res);
     return;
 })
 .patch((req, res) => {
-    let err = new NoRouteException();
+    const err = new NoRouteException();
     errorHandler(err, req, res);
     return;
 })
