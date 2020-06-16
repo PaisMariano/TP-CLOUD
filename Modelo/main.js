@@ -1,4 +1,4 @@
-const {saveUNQfy, getUNQfy} = require('./persistenceHelpers/picklifyJsonPersistence');
+const { saveUNQfy, getUNQfy } = require('./persistenceHelpers/picklifyJsonPersistence');
 const CommandHandler = require('./commandHandler');
 
 /*

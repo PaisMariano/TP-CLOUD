@@ -14,7 +14,7 @@ class User {
   get listenedTracks() {
     return this._listenedTracks;
   }
-  set name(aName){
+  set name(aName) {
     this._name = aName;
   }
   set listenedTracks(aList) {

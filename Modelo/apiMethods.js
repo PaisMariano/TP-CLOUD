@@ -7,8 +7,6 @@ const playlists   = express.Router();
 const users       = express.Router();
 const other       = express.Router();
 const bodyParser  = require('body-parser');
-// const unqmod      = require('./unqfy');
-// const {getUNQfy, saveUNQfy}    = require('./main');
 const {
     getUNQfy,
     saveUNQfy
@@ -24,7 +22,7 @@ const {
 
 const port = 8081;        // set our port
 
-const unqfy = getUNQfy();
+let unqfy = getUNQfy();
 
 //ENDPOINT /artists/<artistID>
 artists.route('/artists/:artistId')
@@ -60,6 +58,7 @@ artists.route('/artists/:artistId')
     }
     console.log("Se guarda Unqfy desde /artists/<artistID> PUT");
     saveUNQfy(unqfy);
+    unqfy = getUNQfy();
     res.status(200);
     res.json(
         tmpArtist.toJSON()        
@@ -75,6 +74,7 @@ artists.route('/artists/:artistId')
     }
     console.log("Se guarda Unqfy desde /artists/<artistID> DELETE");
     saveUNQfy(unqfy);
+    unqfy = getUNQfy();
     res.status(204);
     res.send({
         success: true
@@ -118,6 +118,7 @@ artists.route('/artists')
     }
     console.log("Se guarda Unqfy desde /artists/ POST");
     saveUNQfy(unqfy);
+    unqfy = getUNQfy();
     res.status(201);
     res.json(
         tmpArtist.toJSON()
@@ -159,6 +160,7 @@ albums.route('/albums/:albumId')
     const tmpAlbum = unqfy.getAlbumById(albumId);
     console.log("Se guarda Unqfy desde /albums/<albumId> PATCH");
     saveUNQfy(unqfy);
+    unqfy = getUNQfy();
     res.status(200);
     res.json(
         tmpAlbum.toJSON()
@@ -174,6 +176,7 @@ albums.route('/albums/:albumId')
     }
     console.log("Se guarda Unqfy desde /albums/<albumId> DELETE");
     saveUNQfy(unqfy);
+    unqfy = getUNQfy();
     res.status(204);
     res.send({
         success: true
@@ -222,6 +225,7 @@ albums.route('/albums')
     }
     console.log("Se guarda Unqfy desde /albums/ POST");
     saveUNQfy(unqfy);
+    unqfy = getUNQfy();
     res.status(201);
     res.json(
         tmpAlbum.toJSON()
@@ -244,6 +248,7 @@ tracks.route('/tracks')
     }
     console.log("Se guarda Unqfy desde /tracks/ POST");
     saveUNQfy(unqfy);
+    unqfy = getUNQfy();
     res.status(201);
     res.json(
         tmpTrack.toJSON()
@@ -296,6 +301,7 @@ playlists.route('/playlists/:playlistId')
     }
     console.log("Se guarda Unqfy desde /playlists/<playlistId> DELETE");
     saveUNQfy(unqfy);
+    unqfy = getUNQfy();
     res.status(204);
     res.send({
         success: true
@@ -368,6 +374,7 @@ playlists.route('/playlists')
     }
     console.log("Se guarda Unqfy desde /playlists/ POST");
     saveUNQfy(unqfy);
+    unqfy = getUNQfy();
     res.status(201);
     res.json(
         tmpPlaylist.toJSON()
@@ -402,7 +409,8 @@ users.route('/users/:userId')
         return;
     }
     console.log("Se guarda Unqfy desde /users/ PUT");
-    saveUNQfy(unqfy);    
+    saveUNQfy(unqfy);
+    unqfy = getUNQfy();
     res.status(200);
     res.json(
         tmpUser.toJSON()
@@ -439,6 +447,7 @@ users.route('/users')
     }
     console.log("Se guarda Unqfy desde /users/ POST");
     saveUNQfy(unqfy);
+    unqfy = getUNQfy();
     res.status(201);
     res.json(
         tmpUser.toJSON()
@@ -478,6 +487,7 @@ users.route('/users/:userId/listenings')
 
     console.log("Se guarda Unqfy desde /users/:userId/listenings POST");
     saveUNQfy(unqfy);
+    unqfy = getUNQfy();
     res.status(201);
     res.json(
         tmpTrack.toJSON()
@@ -520,10 +530,44 @@ app.use((req, res, next) => {
 });
 app.use('/api', artists, albums, tracks, playlists, users);
 app.use('*', other);
-app.listen(port);
+const server = app.listen(port, () => {
+    console.log("Server running");
+});
 app.use(errorHandler);
 
-console.log("Escuchando en el puerto %d...", port)
+if (process.platform === "win32") {
+    var rl = require("readline").createInterface({
+        input: process.stdin,
+        output: process.stdout
+    });
+
+    rl.on("SIGINT", function () {
+        process.emit("SIGINT");
+    });
+}
+
+process.on("SIGINT", function () {
+    //graceful shutdown
+    console.log("Matando el proceso y apagando el server");
+    server.close(() => {
+        console.log("Server apagado");
+        process.exit();
+    });
+});
+
+process.on('SIGTERM', () => {
+    server.close(() => {
+        console.log('Process terminated from SIGTERM');
+    });
+});
+
+process.on('SIGKILL', () => {
+    server.close(() => {
+        console.log('Process terminated from SIGKILL');
+    });
+});
+
+console.log("Escuchando en el puerto %d...", port);
 
 function errorHandler(err, req, res) {
     // Chequeamos que tipo de error es y actuamos en consecuencia
@@ -582,8 +626,8 @@ function errorHandler(err, req, res) {
                 status: 500,
                 errorCode: "INTERNAL_SERVER_ERROR"
             });
-        }
     }
+}
 
 class APIError extends Error {
     constructor(name, statusCode, errorCode, message = null) {
@@ -616,4 +660,3 @@ class NoRouteException extends APIError {
         super('NoRouteException', 404, 'RESOURCE_NOT_FOUND');
     }  
 }
-
