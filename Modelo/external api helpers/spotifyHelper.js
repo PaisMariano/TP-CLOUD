@@ -4,11 +4,14 @@ const Printer = require('../printer');
 const printer = new Printer();
 const CLIENT_ID = 'd38a0113ad3e429c9dbfe4ed483a2874'; // Your client id
 const CLIENT_SECRET = 'a9176cac20db4393877e6a0ffb99bff3'; // Your secret
+const {NoMatchingArtistNameException} = require('../exceptions');
 
 class SpotifyHelper {
+    constructor() {
+        this._authToken = creds.access_token;
+    }
 
     _refreshToken(refreshToken) {
-        console.log("Arranco refreshToken");
         const refreshOptions = {
             uri: 'https://accounts.spotify.com/api/token',
             headers: { Authorization: 'Basic ' + (new Buffer(CLIENT_ID + ':' + CLIENT_SECRET).toString('base64')) },
@@ -22,40 +25,57 @@ class SpotifyHelper {
         return rp.post(refreshOptions);
     }
 
-    _searchArtistByName(authToken, artist) {
-        const uriEncodedArtistName = encodeURI(artist.name);
+    _searchArtistByName(artistName) {
+        const uriEncodedArtistName = artistName;
         const searchOptions = {
             url: 'https://api.spotify.com/v1/search',
             qs: {
                 q: uriEncodedArtistName,
                 type: 'artist'
             },
-            headers: { Authorization: 'Bearer ' + authToken },
+            headers: { Authorization: 'Bearer ' + this._authToken },
             json: true,
         };
 
-        return rp.get(searchOptions)
+        return rp.get(searchOptions);
     }
 
-    _getArtistsAlbums(authToken, artistSearchResponse) {
-        const artistId = artistSearchResponse.artists.items[0].id;
+    _handleNoNameMatch(artistSearchResponse, artistName) {
+        if (artistSearchResponse.artists.total === 0) {
+            throw new NoMatchingArtistNameException(artistName);
+        }
+
+        return artistSearchResponse.artists.items[0].id;
+    }
+
+    _getArtistsAlbums(artistId) {
         const options = {
             url: 'https://api.spotify.com/v1/artists/' + artistId + '/albums',
             headers: {
-                Authorization: 'Bearer ' + authToken,
+                Authorization: 'Bearer ' + this._authToken,
                 include_groups: 'album'
             },
             json: true
         };
         
-        return rp.get(options)
-        .then((albumsResponse) => {
-            const albums = albumsResponse.items.map(albumRes => {
+        return rp.get(options);
+    }
+
+    _handleNoAlbumsMatch(albumsByArtistIdResponse, artistId) {
+        if (albumsByArtistIdResponse.total === 0) {
+            throw Error(`No se encontraron albumes para el artista de id ${artistId}`);
+        }
+
+        return albumsByArtistIdResponse.items;
+    }
+
+    _mapAlbumsData(spotifyAlbums) {
+            const albumsData = spotifyAlbums.map(albumRes => {
                 return { name: albumRes.name, year: albumRes.release_date.slice(0, 4) }
             });
 
             const albumsSinRepetidosDeNombre = [];
-            albums.forEach(album => {
+            albumsData.forEach(album => {
                 if (albumsSinRepetidosDeNombre.every(albm => albm.name.toLowerCase() !== album.name.toLowerCase())) {
                     albumsSinRepetidosDeNombre.push(album);
                 }
@@ -64,7 +84,6 @@ class SpotifyHelper {
             return new Promise ((resolve, reject) => 
                 resolve(albumsSinRepetidosDeNombre)
             );
-        })
     }
 
     _addAlbumsToUnqfy(unqfy, artist, albumsData) {
@@ -78,14 +97,17 @@ class SpotifyHelper {
     }
 
     populateAlbumsForArtist(unqfy, artist) {
-        let access_token;
         this._refreshToken(creds.refresh_token)
         .then(refreshTokenResponse => {
-            access_token = refreshTokenResponse.access_token;
-            return this._searchArtistByName(access_token, artist);
+            this._authToken = refreshTokenResponse.access_token;
+            return this._searchArtistByName(artist.name);
         })
-        .then(searchArtistResponse => this._getArtistsAlbums(access_token, searchArtistResponse))
-        .then(albums => this._addAlbumsToUnqfy(unqfy, artist, albums));
+        .then(searchArtistResponse => this._handleNoNameMatch(searchArtistResponse, artist.name))
+        .then(spotifyArtistId => this._getArtistsAlbums(spotifyArtistId))
+        .then(albumsByIdResponse => this._handleNoAlbumsMatch(albumsByIdResponse, artist.id))
+        .then(albumsFromSpotify => this._mapAlbumsData(albumsFromSpotify))
+        .then(albums => this._addAlbumsToUnqfy(unqfy, artist, albums))
+        .catch(exception => printer.printException(exception));
     }
 }
 

@@ -11,6 +11,7 @@ const Playlist = require('./playlist.js');
 const User = require('./user.js');
 const UserHandler = require('./userHandler.js');
 const SpotifyHelper = require('./external api helpers/spotifyHelper');
+const MusixmatchHelper = require('./external api helpers/musixmatchHelper');
 
 class UNQfy {
   constructor(){
@@ -22,6 +23,7 @@ class UNQfy {
     this._playlistGenerator = new PlaylistGenerator();
     this._userHandler       = new UserHandler();
     this._spotifyHelper     = new SpotifyHelper();
+    this._musixmatchHelper  = new MusixmatchHelper();
   }
   //GETTERS AND SETTERS:
   get artists(){return this._artists;}
@@ -67,7 +69,8 @@ class UNQfy {
   artistTopThreeTracks(artistId){return this._searcher.topThreeListenedTracksByArtist(this._artists, this._users, artistId);}
   timesListened(userId, trackId) {return this._searcher.timesListenedByUser(this, userId, trackId);}
   listen(userId, trackId){return this._userHandler.listen(this, userId, trackId);}
-  getLyrics(trackId){return this.getTrackById(trackId).getLyrics();}
+  // getLyrics(trackId){return this.getTrackById(trackId).getLyrics();}
+  getLyrics(trackId){return this._musixmatchHelper.getLyrics(this, this.getTrackById(trackId));}
   getAlbumsForArtist(artistId){return this.getArtistById(artistId).albums;}
   getPlaylistsCustomSearch(searchData){return this._searcher.searchPlaylistsCustom(this._playlists, searchData);}
 
@@ -86,7 +89,6 @@ class UNQfy {
   //CUSTOM METHODS:
   populateAlbumsForArtist(artistId) {
     this._spotifyHelper.populateAlbumsForArtist(this, this.getArtistById(artistId));
-    // this.getArtistById(artistId).populateAlbumsForArtist(this);
   }
   
   //GIVEN METHODS:
@@ -103,7 +105,7 @@ class UNQfy {
   static load(filename) {
     const serializedData = fs.readFileSync(filename, {encoding: 'utf-8'});
     //COMPLETAR POR EL ALUMNO: Agregar a la lista todas las clases que necesitan ser instanciadas
-    const classes = [UNQfy, Artist, Album, Track, Playlist, User, PlaylistGenerator, AbmHandler, Searcher, UserHandler, SpotifyHelper];
+    const classes = [UNQfy, Artist, Album, Track, Playlist, User, PlaylistGenerator, AbmHandler, Searcher, UserHandler, SpotifyHelper, MusixmatchHelper];
     return picklify.unpicklify(JSON.parse(serializedData), classes);
   }
 }
