@@ -7,7 +7,7 @@ function getUNQfy(filename = 'data.json') {
   let unqfy = new unqmod.UNQfy();
   if (fs.existsSync(filename)) {
     unqfy = unqmod.UNQfy.load(filename);
-    console.log("Unqfy leido: ", unqfy);
+    // console.log("Unqfy leido: ", unqfy);
   }
   return unqfy;
 }
