@@ -97,7 +97,7 @@ class UNQfy {
     const listenersBkp = this.listeners;
     this.listeners = [];
 
-    console.log("this (unqfy): ", this);
+    // console.log("this (unqfy): ", this);
     const serializedData = picklify.picklify(this);
 
     this.listeners = listenersBkp;
