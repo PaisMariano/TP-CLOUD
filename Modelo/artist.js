@@ -1,5 +1,3 @@
-const SpotifyHelper = require('./external api helpers/spotifyHelper');
-
 class Artist {
   constructor(anID, aName, aCountry) {
     this._id = anID;
@@ -28,21 +26,6 @@ class Artist {
   }
   set albums(aList) {
     return (this._albums = aList);
-  }
-
-  populateAlbumsForArtist(unqfy) {
-    const spotifyHelper = new SpotifyHelper(unqfy, this);
-    spotifyHelper.populateAlbumsForArtist();
-  }
-
-  addAlbums({albumsToAdd, unqfy}) {
-    try {
-      albumsToAdd.forEach(album => unqfy.addAlbum(self.id, album));
-      unqfy.save('data.json');
-      printer.printEntity('Artista actualizado', self._artist);
-    } catch (exception) {
-      printer.printException(exception);
-    }
   }
 
   toJSON() {

@@ -353,7 +353,7 @@ class CommandHandler {
       getLyrics: {
         funct: function(unqfy) {
           try {
-            printer.printMessage(`El track con id ${commandArgs[1]} tiene el siguiente lyric: `)
+            printer.printMessage(`El track con id ${commandArgs[1]} tiene el siguiente lyric: `);
             unqfy.getLyrics(Number(commandArgs[1]));
           } catch (exception) {
             printer.printException(exception);
@@ -398,7 +398,7 @@ class CommandHandler {
   }
 
   saveUnqfyUnlessAsyncCmd(unqfy, cmdId) {
-    if (cmdId != "populateAlbumsForArtist") { // aca podemos validar todos los comandos asincronos, o preguntarle al comando si es asincrono
+    if (cmdId != "populateAlbumsForArtist" && cmdId != "getLyrics") { // aca podemos validar todos los comandos asincronos, o preguntarle al comando si es asincrono
       unqfy.save('data.json');
     }
   }

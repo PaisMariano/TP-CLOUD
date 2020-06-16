@@ -100,5 +100,6 @@ module.exports = {
   AlreadyExistsAlbumException,
   AlreadyExistsTrackException,
   AlreadyExistsPlaylistException,
-  MissingArgsInCommand
+  MissingArgsInCommand,
+  NoMatchingArtistNameException
 };
