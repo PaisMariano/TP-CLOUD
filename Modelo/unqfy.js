@@ -69,7 +69,6 @@ class UNQfy {
   artistTopThreeTracks(artistId){return this._searcher.topThreeListenedTracksByArtist(this._artists, this._users, artistId);}
   timesListened(userId, trackId) {return this._searcher.timesListenedByUser(this, userId, trackId);}
   listen(userId, trackId){return this._userHandler.listen(this, userId, trackId);}
-  // getLyrics(trackId){return this.getTrackById(trackId).getLyrics();}
   getLyrics(trackId){return this._musixmatchHelper.getLyrics(this, this.getTrackById(trackId));}
   getAlbumsForArtist(artistId){return this.getArtistById(artistId).albums;}
   getPlaylistsCustomSearch(searchData){return this._searcher.searchPlaylistsCustom(this._playlists, searchData);}
