@@ -353,7 +353,6 @@ class CommandHandler {
       getLyrics: {
         funct: function(unqfy) {
           try {
-            printer.printMessage(`El track con id ${commandArgs[1]} tiene el siguiente lyric: `);
             unqfy.getLyrics(Number(commandArgs[1]));
           } catch (exception) {
             printer.printException(exception);
