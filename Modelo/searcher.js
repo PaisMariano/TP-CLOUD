@@ -1,6 +1,6 @@
-const {NoMatchingArtistException, NoMatchingAlbumException,
+const { NoMatchingArtistException, NoMatchingAlbumException,
   NoMatchingTrackException, NoMatchingPlaylistException,
-  NoMatchingUserException} = require('./exceptions');
+  NoMatchingUserException } = require('./exceptions');
 
 class Searcher {
   searchArtist(artistList, artistId) {
@@ -94,7 +94,7 @@ class Searcher {
 
   searchTracksByArtist(artistList, artistId) {
     const artist = this.searchArtist(artistList, artistId);
-    return artist.albums.reduce((acc, album) => acc.concat(album.tracks),[]);
+    return artist.albums.reduce((acc, album) => acc.concat(album.tracks), []);
   }
 
   searchTracksByGenres(artistList, genres) {
@@ -171,13 +171,13 @@ class Searcher {
     return tempObj;
   }
 
-  listenedTracks(unqfy, userId){
+  listenedTracks(unqfy, userId) {
     const tempUser = unqfy.getUserById(userId);
     return tempUser.getListenedTracks();
   }
-  
-  timesListenedByUser(unqfy, userId, trackId){
-    const tempUser  = unqfy.getUserById(userId);
+
+  timesListenedByUser(unqfy, userId, trackId) {
+    const tempUser = unqfy.getUserById(userId);
     const tempTrack = unqfy.getTrackById(trackId);
     return tempUser.timesListened(tempTrack);
   }

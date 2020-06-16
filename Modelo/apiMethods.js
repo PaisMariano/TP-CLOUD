@@ -1,25 +1,28 @@
-let express     = require('express');        // import express
-let app         = express();                 // define our app using express
-let artists     = express.Router();
-let albums      = express.Router();
-let tracks      = express.Router();
-let playlists   = express.Router();
-let users       = express.Router();
-let other       = express.Router();
-let bodyParser  = require('body-parser');
-let unqmod      = require('./unqfy');
+const express     = require('express');        // import express
+const app         = express();                 // define our app using express
+const artists     = express.Router();
+const albums      = express.Router();
+const tracks      = express.Router();
+const playlists   = express.Router();
+const users       = express.Router();
+const other       = express.Router();
+const bodyParser  = require('body-parser');
 const {
-    NoMatchingArtistException, 
+    getUNQfy,
+    saveUNQfy
+} = require('./persistenceHelpers/picklifyJsonPersistence');
+const {
+    NoMatchingArtistException,
     NoMatchingAlbumException,
     AlreadyExistsArtistException,
     AlreadyExistsAlbumException,
-    NoMatchingTrackException, 
+    NoMatchingTrackException,
     NoMatchingPlaylistException
 } = require('./exceptions');
 
-let port = 8081;        // set our port
+const port = 8081;        // set our port
 
-let unqfy = new unqmod.UNQfy();
+let unqfy = getUNQfy();
 
 //ENDPOINT /artists/<artistID>
 artists.route('/artists/:artistId')
@@ -52,8 +55,10 @@ artists.route('/artists/:artistId')
     }catch(err){
         errorHandler(err, req, res);
         return;
-    }    
-    unqfy.save('data.json');
+    }
+    console.log("Se guarda Unqfy desde /artists/<artistID> PUT");
+    saveUNQfy(unqfy);
+    unqfy = getUNQfy();
     res.status(200);
     res.json(
         tmpArtist.toJSON()        
@@ -67,7 +72,9 @@ artists.route('/artists/:artistId')
         errorHandler(err, req, res);
         return;
     }
-    unqfy.save('data.json');
+    console.log("Se guarda Unqfy desde /artists/<artistID> DELETE");
+    saveUNQfy(unqfy);
+    unqfy = getUNQfy();
     res.status(204);
     res.send({
         success: true
@@ -99,7 +106,7 @@ artists.route('/artists')
     const data = req.body;
     let tmpArtist;
     if (data.name === undefined || data.country === undefined){
-        let err = new BadRequestException();
+        const err = new BadRequestException();
         errorHandler(err, req, res);
         return;
     }
@@ -109,7 +116,9 @@ artists.route('/artists')
         errorHandler(err, req, res);
         return;
     }
-    unqfy.save('data.json');
+    console.log("Se guarda Unqfy desde /artists/ POST");
+    saveUNQfy(unqfy);
+    unqfy = getUNQfy();
     res.status(201);
     res.json(
         tmpArtist.toJSON()
@@ -136,7 +145,7 @@ albums.route('/albums/:albumId')
     const data = req.body;
     const albumId = parseInt(req.params.albumId);
     if (data.year === undefined){
-        let err = new BadRequestException();
+        const err = new BadRequestException();
         errorHandler(err, req, res);
         return;
     }
@@ -148,8 +157,10 @@ albums.route('/albums/:albumId')
         return;
     }
 
-    let tmpAlbum = unqfy.getAlbumById(albumId);
-    unqfy.save('data.json');
+    const tmpAlbum = unqfy.getAlbumById(albumId);
+    console.log("Se guarda Unqfy desde /albums/<albumId> PATCH");
+    saveUNQfy(unqfy);
+    unqfy = getUNQfy();
     res.status(200);
     res.json(
         tmpAlbum.toJSON()
@@ -163,7 +174,9 @@ albums.route('/albums/:albumId')
         errorHandler(err, req, res);
         return;
     }
-    unqfy.save('data.json');
+    console.log("Se guarda Unqfy desde /albums/<albumId> DELETE");
+    saveUNQfy(unqfy);
+    unqfy = getUNQfy();
     res.status(204);
     res.send({
         success: true
@@ -195,7 +208,7 @@ albums.route('/albums')
     const data = req.body;
     let tmpAlbum;
     if (data.artistId === undefined || data.name === undefined || data.year === undefined){
-        let err = new BadRequestException();
+        const err = new BadRequestException();
         errorHandler(err, req, res);
         return;
     }
@@ -210,7 +223,9 @@ albums.route('/albums')
         }
         return;
     }
-    unqfy.save('data.json');
+    console.log("Se guarda Unqfy desde /albums/ POST");
+    saveUNQfy(unqfy);
+    unqfy = getUNQfy();
     res.status(201);
     res.json(
         tmpAlbum.toJSON()
@@ -221,7 +236,7 @@ tracks.route('/tracks')
     const data = req.body;
     let tmpTrack;
     if (data.name === undefined){
-        let err = new BadRequestException();
+        const err = new BadRequestException();
         errorHandler(err, req, res);
         return;
     }
@@ -231,7 +246,9 @@ tracks.route('/tracks')
         errorHandler(err, req, res);
         return;
     }
-    unqfy.save('data.json');
+    console.log("Se guarda Unqfy desde /tracks/ POST");
+    saveUNQfy(unqfy);
+    unqfy = getUNQfy();
     res.status(201);
     res.json(
         tmpTrack.toJSON()
@@ -241,7 +258,7 @@ tracks.route('/tracks/:trackId/lyrics')
 .get((req, res) => {
     const trackId = parseInt(req.params.trackId);
     let tmpTrack;
-    try {        
+    try {
         unqfy.getLyrics(trackId);
         tmpTrack = unqfy.getTrackById(trackId);
     }catch(err){
@@ -282,7 +299,9 @@ playlists.route('/playlists/:playlistId')
         errorHandler(err, req, res);
         return;
     }
-    unqfy.save('data.json');
+    console.log("Se guarda Unqfy desde /playlists/<playlistId> DELETE");
+    saveUNQfy(unqfy);
+    unqfy = getUNQfy();
     res.status(204);
     res.send({
         success: true
@@ -292,12 +311,12 @@ playlists.route('/playlists/:playlistId')
 //ENDPOINT /playlists/
 playlists.route('/playlists')
 .get((req, res) => {
-    let name = req.query.name;
-    let durationLT = req.query.durationLT;
-    let durationGT = req.query.durationGT;
+    const name = req.query.name;
+    const durationLT = req.query.durationLT;
+    const durationGT = req.query.durationGT;
 
     if (name === undefined && durationLT === undefined && durationGT === undefined) {
-        let err = new BadRequestException();
+        const err = new BadRequestException();
         errorHandler(err, req, res);
         return;
     }
@@ -353,14 +372,16 @@ playlists.route('/playlists')
         errorHandler(err, req, res);
         return;
     }
-    unqfy.save('data.json');
+    console.log("Se guarda Unqfy desde /playlists/ POST");
+    saveUNQfy(unqfy);
+    unqfy = getUNQfy();
     res.status(201);
     res.json(
         tmpPlaylist.toJSON()
     )
 })
 
-//ENDPOINT /Users/
+//ENDPOINT /users/
 users.route('/users/:userId')
 .get((req, res) => {
     const userId = parseInt(req.params.userId);
@@ -387,7 +408,9 @@ users.route('/users/:userId')
         errorHandler(err, req, res);
         return;
     }
-    unqfy.save('data.json');    
+    console.log("Se guarda Unqfy desde /users/ PUT");
+    saveUNQfy(unqfy);
+    unqfy = getUNQfy();
     res.status(200);
     res.json(
         tmpUser.toJSON()
@@ -412,7 +435,7 @@ users.route('/users')
     const data = req.body;
     let tmpUser;
     if (data.name === undefined || data.name === ""){
-        let err = new BadRequestException();
+        const err = new BadRequestException();
         errorHandler(err, req, res);
         return;
     }
@@ -422,7 +445,9 @@ users.route('/users')
         errorHandler(err, req, res);
         return;
     }
-    unqfy.save('data.json');
+    console.log("Se guarda Unqfy desde /users/ POST");
+    saveUNQfy(unqfy);
+    unqfy = getUNQfy();
     res.status(201);
     res.json(
         tmpUser.toJSON()
@@ -449,18 +474,20 @@ users.route('/users/:userId/listenings')
     const data = req.body;
     let tmpTrack;
     if (data.trackId === undefined){
-        let err = new BadRequestException();
+        const err = new BadRequestException();
         errorHandler(err, req, res);
         return;
     }
     try {
-        tmpTrack = unqfy.listen(userId, data.trackId);
+        tmpTrack = unqfy.listen(userId, parseInt(data.trackId));
     }catch(err){
         errorHandler(err, req, res);
         return;
     }
-    
-    unqfy.save('data.json');
+
+    console.log("Se guarda Unqfy desde /users/:userId/listenings POST");
+    saveUNQfy(unqfy);
+    unqfy = getUNQfy();
     res.status(201);
     res.json(
         tmpTrack.toJSON()
@@ -471,22 +498,22 @@ users.route('/users/:userId/listenings')
 
 other.route('*')
 .get((req, res) => {
-    let err = new NoRouteException();
+    const err = new NoRouteException();
     errorHandler(err, req, res);
     return;
 })
 .post((req, res) => {
-    let err = new NoRouteException();
+    const err = new NoRouteException();
     errorHandler(err, req, res);
     return;
 })
 .delete((req, res) => {
-    let err = new NoRouteException();
+    const err = new NoRouteException();
     errorHandler(err, req, res);
     return;
 })
 .patch((req, res) => {
-    let err = new NoRouteException();
+    const err = new NoRouteException();
     errorHandler(err, req, res);
     return;
 })
@@ -503,10 +530,44 @@ app.use((req, res, next) => {
 });
 app.use('/api', artists, albums, tracks, playlists, users);
 app.use('*', other);
-app.listen(port);
+const server = app.listen(port, () => {
+    console.log("Server running");
+});
 app.use(errorHandler);
 
-console.log("Escuchando en el puerto %d...", port)
+if (process.platform === "win32") {
+    var rl = require("readline").createInterface({
+        input: process.stdin,
+        output: process.stdout
+    });
+
+    rl.on("SIGINT", function () {
+        process.emit("SIGINT");
+    });
+}
+
+process.on("SIGINT", function () {
+    //graceful shutdown
+    console.log("Matando el proceso y apagando el server");
+    server.close(() => {
+        console.log("Server apagado");
+        process.exit();
+    });
+});
+
+process.on('SIGTERM', () => {
+    server.close(() => {
+        console.log('Process terminated from SIGTERM');
+    });
+});
+
+process.on('SIGKILL', () => {
+    server.close(() => {
+        console.log('Process terminated from SIGKILL');
+    });
+});
+
+console.log("Escuchando en el puerto %d...", port);
 
 function errorHandler(err, req, res) {
     // Chequeamos que tipo de error es y actuamos en consecuencia
@@ -565,8 +626,8 @@ function errorHandler(err, req, res) {
                 status: 500,
                 errorCode: "INTERNAL_SERVER_ERROR"
             });
-        }
     }
+}
 
 class APIError extends Error {
     constructor(name, statusCode, errorCode, message = null) {
@@ -599,4 +660,3 @@ class NoRouteException extends APIError {
         super('NoRouteException', 404, 'RESOURCE_NOT_FOUND');
     }  
 }
-

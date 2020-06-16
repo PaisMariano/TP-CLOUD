@@ -2,8 +2,8 @@ const Artist = require('./artist.js');
 const Album = require('./album.js');
 const Track = require('./track.js');
 const User = require('./user.js');
-const {AlreadyExistsArtistException, AlreadyExistsAlbumException,
-  AlreadyExistsTrackException} = require('./exceptions.js');
+const { AlreadyExistsArtistException, AlreadyExistsAlbumException,
+  AlreadyExistsTrackException } = require('./exceptions.js');
 
 class AbmHandler {
   constructor() {
