@@ -1,4 +1,4 @@
-const Printer = require('../printer');
+const Printer = require('../utils/printer');
 const printer = new Printer();
 var rp = require('request-promise');
 
