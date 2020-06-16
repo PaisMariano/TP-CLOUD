@@ -26,11 +26,10 @@ class SpotifyHelper {
     }
 
     _searchArtistByName(artistName) {
-        const uriEncodedArtistName = artistName;
         const searchOptions = {
             url: 'https://api.spotify.com/v1/search',
             qs: {
-                q: uriEncodedArtistName,
+                q: artistName,
                 type: 'artist'
             },
             headers: { Authorization: 'Bearer ' + this._authToken },
