@@ -407,6 +407,7 @@ class CommandHandler {
 
   saveUnqfyUnlessAsyncCmd(unqfy, cmdId) {
     if (cmdId != "populateAlbumsForArtist" && cmdId != "getLyrics") { // aca podemos validar todos los comandos asincronos, o preguntarle al comando si es asincrono
+      console.log("Se guarda Unqfy desde commandHandler");
       saveUNQfy(unqfy);
     }
   }

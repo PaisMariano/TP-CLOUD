@@ -93,13 +93,19 @@ class UNQfy {
   
   //GIVEN METHODS:
   save(filename) {
+    console.log("Write starting..");
     const listenersBkp = this.listeners;
     this.listeners = [];
 
     const serializedData = picklify.picklify(this);
 
     this.listeners = listenersBkp;
-    fs.writeFileSync(filename, JSON.stringify(serializedData, null, 2));
+    fs.writeFile(filename, JSON.stringify(serializedData, null, 2), {encoding: 'utf-8'}, err => {
+      if (err) {
+        throw err;
+      }
+      console.log("Write successful");
+    });
   }
 
   static load(filename) {

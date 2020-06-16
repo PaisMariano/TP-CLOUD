@@ -1,4 +1,3 @@
-
 const fs = require('fs'); // necesitado para guardar/cargar unqfy
 const unqmod = require('../unqfy'); // importamos el modulo unqfy
 
@@ -12,6 +11,7 @@ function getUNQfy(filename = 'data.json') {
   }
   
 function saveUNQfy(unqfy, filename = 'data.json') {
+    console.log("Se guarda con el metodo 'saveUNQfy'");
     unqfy.save(filename);
 }
 

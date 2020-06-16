@@ -69,6 +69,7 @@ class MusixmatchHelper {
             .then(lyricsByIdResponse => this._handleNoLyrics(lyricsByIdResponse))
             .then(musixMatchLyrics => {
                 track.lyrics = musixMatchLyrics;
+                console.log("Se guarda Unqfy desde musixmatchHelper");
                 unqfy.save('data.json');
                 return this._printAndReturnLyrics(track);
             })

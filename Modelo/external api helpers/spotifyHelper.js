@@ -88,6 +88,7 @@ class SpotifyHelper {
     _addAlbumsToUnqfy(unqfy, artist, albumsData) {
         try {
             albumsData.forEach(albumData => unqfy.addAlbum(artist.id, albumData));
+            console.log("Se guarda Unqfy desde spotifyHelper");
             unqfy.save('data.json');
             printer.printEntity('Artista actualizado', artist);
           } catch (exception) {
