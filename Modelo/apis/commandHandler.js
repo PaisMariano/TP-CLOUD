@@ -1,9 +1,9 @@
-const Printer = require('./printer');
-const {MissingArgsInCommand} = require('./exceptions');
+const Printer = require('../utils/printer');
+const {MissingArgsInCommand} = require('../exceptions');
 const {
   getUNQfy,
   saveUNQfy
-} = require('./persistenceHelpers/picklifyJsonPersistence');
+} = require('../persistenceHelpers/picklifyJsonPersistence');
 
 class CommandHandler {
   constructor(args) {
@@ -383,7 +383,6 @@ class CommandHandler {
     if (maybeUNQfy === undefined) {
       unqfy = getUNQfy();
     }
-    console.log("unqfy actual: ", unqfy);
     const commandId = this._command[0];
     if (this.validCommands().hasOwnProperty(commandId)) {
       try {

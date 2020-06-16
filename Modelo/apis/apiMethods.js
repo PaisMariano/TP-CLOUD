@@ -1,16 +1,7 @@
-const express     = require('express');        // import express
-const app         = express();                 // define our app using express
-const artists     = express.Router();
-const albums      = express.Router();
-const tracks      = express.Router();
-const playlists   = express.Router();
-const users       = express.Router();
-const other       = express.Router();
-const bodyParser  = require('body-parser');
 const {
     getUNQfy,
     saveUNQfy
-} = require('./persistenceHelpers/picklifyJsonPersistence');
+} = require('../persistenceHelpers/picklifyJsonPersistence');
 const {
     NoMatchingArtistException,
     NoMatchingAlbumException,
@@ -18,9 +9,15 @@ const {
     AlreadyExistsAlbumException,
     NoMatchingTrackException,
     NoMatchingPlaylistException
-} = require('./exceptions');
+} = require('../exceptions');
 
-const port = 8081;        // set our port
+const express     = require('express');        // import express
+const artists     = express.Router();
+const albums      = express.Router();
+const tracks      = express.Router();
+const playlists   = express.Router();
+const users       = express.Router();
+const other       = express.Router();
 
 let unqfy = getUNQfy();
 
@@ -518,57 +515,6 @@ other.route('*')
     return;
 })
 
-app.use((req, res, next) => {
-    bodyParser.json()(req, res, err => {
-        if (err) {
-            err = new BadRequestException();
-            errorHandler(err, req, res);
-            return;
-        }
-        next();
-    });
-});
-app.use('/api', artists, albums, tracks, playlists, users);
-app.use('*', other);
-const server = app.listen(port, () => {
-    console.log("Server running");
-});
-app.use(errorHandler);
-
-if (process.platform === "win32") {
-    var rl = require("readline").createInterface({
-        input: process.stdin,
-        output: process.stdout
-    });
-
-    rl.on("SIGINT", function () {
-        process.emit("SIGINT");
-    });
-}
-
-process.on("SIGINT", function () {
-    //graceful shutdown
-    console.log("Matando el proceso y apagando el server");
-    server.close(() => {
-        console.log("Server apagado");
-        process.exit();
-    });
-});
-
-process.on('SIGTERM', () => {
-    server.close(() => {
-        console.log('Process terminated from SIGTERM');
-    });
-});
-
-process.on('SIGKILL', () => {
-    server.close(() => {
-        console.log('Process terminated from SIGKILL');
-    });
-});
-
-console.log("Escuchando en el puerto %d...", port);
-
 function errorHandler(err, req, res) {
     // Chequeamos que tipo de error es y actuamos en consecuencia
     switch(true){
@@ -660,3 +606,14 @@ class NoRouteException extends APIError {
         super('NoRouteException', 404, 'RESOURCE_NOT_FOUND');
     }  
 }
+
+module.exports = {
+    artists,
+    albums,
+    tracks,
+    playlists,
+    users,
+    other,
+    errorHandler,
+    BadRequestException
+};

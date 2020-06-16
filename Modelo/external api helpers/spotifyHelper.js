@@ -1,6 +1,6 @@
-const creds = require('../spotifyCreds.json');
+const creds = require('./spotifyCreds.json');
 var rp = require('request-promise');
-const Printer = require('../printer');
+const Printer = require('../utils/printer');
 const printer = new Printer();
 const CLIENT_ID = 'd38a0113ad3e429c9dbfe4ed483a2874'; // Your client id
 const CLIENT_SECRET = 'a9176cac20db4393877e6a0ffb99bff3'; // Your secret

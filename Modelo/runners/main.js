@@ -1,5 +1,5 @@
-const { saveUNQfy, getUNQfy } = require('./persistenceHelpers/picklifyJsonPersistence');
-const CommandHandler = require('./commandHandler');
+const { saveUNQfy, getUNQfy } = require('../persistenceHelpers/picklifyJsonPersistence');
+const CommandHandler = require('../apis/commandHandler');
 
 /*
  En esta funcion deberán interpretar los argumentos pasado por linea de comandos
