@@ -357,7 +357,8 @@ class CommandHandler {
       getLyrics: {
         funct: function(unqfy) {
           try {
-            unqfy.getLyrics(Number(commandArgs[1]));
+            unqfy.getLyrics(Number(commandArgs[1]))
+            .catch(exception => printer.printException(exception));
           } catch (exception) {
             printer.printException(exception);
           }

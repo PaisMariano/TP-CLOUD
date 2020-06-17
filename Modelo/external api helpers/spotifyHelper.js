@@ -80,9 +80,7 @@ class SpotifyHelper {
       }
     });
 
-    return new Promise((resolve, reject) =>
-      resolve(albumsSinRepetidosDeNombre)
-    );
+    return albumsSinRepetidosDeNombre;
   }
 
   _addAlbumsToUnqfy(unqfy, artist, albumsData) {

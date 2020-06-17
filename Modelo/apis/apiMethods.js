@@ -228,6 +228,7 @@ albums.route('/albums')
         tmpAlbum.toJSON()
     );
 })
+
 tracks.route('/tracks')
 .post((req, res) => {
     const data = req.body;
@@ -251,24 +252,53 @@ tracks.route('/tracks')
         tmpTrack.toJSON()
     );
 })
+
 tracks.route('/tracks/:trackId/lyrics')
 .get((req, res) => {
     const trackId = parseInt(req.params.trackId);
     let tmpTrack;
     try {
-        unqfy.getLyrics(trackId);
         tmpTrack = unqfy.getTrackById(trackId);
+        unqfy.getLyrics(trackId)
+        .then( lyrics => {
+            res.status(200);
+            res.json({
+                body : {
+                    "name":     tmpTrack._name,
+                    "lyrics":   lyrics,
+                }
+            });
+        })
+        .catch(
+            exception => {
+                switch(exception.message) {
+                    case 'status code != 200':
+                        // throw NoRouteException();
+                    case 'No hay tracks con ese nombre.':
+                        let err = new NoRouteException();
+                        errorHandler(err, req, res);
+                        break;
+                        // throw NoRouteException();
+                    default:
+                        errorHandler(exception, req, res);
+                        // throw exception;
+                }
+            }
+        )
     }catch(err){
-        errorHandler(err, req, res);
-        return;
-    }
-    res.status(200);
-    res.json({
-        body : {
-            "name":     tmpTrack._name,
-            "lyrics":   tmpTrack._lyrics,
+        // errorHandler(err, req, res);
+        // return;
+        if (err instanceof NoMatchingArtistException) {
+            let err = new NoRouteException();
+            errorHandler(err, req, res);
+            return;
+            // throw NoRouteException();
+        } else {
+            errorHandler(err, req, res);
+            return;
+            // throw err;
         }
-    });
+    }
 })
 
 //ENDPOINT /playlists/<playlistId>

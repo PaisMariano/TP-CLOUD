@@ -61,7 +61,9 @@ class MusixmatchHelper {
 
   getLyrics(unqfy, track) {
     if (track.lyrics !== "") {
-      return this._printAndReturnLyrics(track);
+      return new Promise((resolve, reject) =>
+        resolve(this._printAndReturnLyrics(track))
+      );
     } else {
       return this._searchTrackByName(track.name)
         .then(searchTrackResponse => this._handleNoNameMatch(searchTrackResponse))

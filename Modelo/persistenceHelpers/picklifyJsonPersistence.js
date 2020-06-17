@@ -19,4 +19,4 @@ function saveUNQfy(unqfy, filename = 'data.json') {
 module.exports = {
   getUNQfy,
   saveUNQfy
-}
+};

@@ -26,11 +26,10 @@ app.use((req, res, next) => {
 });
 app.use('/api', artists, albums, tracks, playlists, users);
 app.use('*', other);
+app.use(errorHandler);
 const server = app.listen(port, () => {
     console.log("Server running");
 });
-app.use(errorHandler);
-
 
 if (process.platform === "win32") {
     var rl = require("readline").createInterface({
@@ -49,18 +48,6 @@ process.on("SIGINT", function () {
     server.close(() => {
         console.log("Server apagado");
         process.exit();
-    });
-});
-
-process.on('SIGTERM', () => {
-    server.close(() => {
-        console.log('Process terminated from SIGTERM');
-    });
-});
-
-process.on('SIGKILL', () => {
-    server.close(() => {
-        console.log('Process terminated from SIGKILL');
     });
 });
 
