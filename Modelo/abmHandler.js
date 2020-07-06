@@ -159,6 +159,20 @@ class AbmHandler {
       return prev ? prev[curr] : null;
     }, obj);
   }
+
+  subscribe(unqfy, artistId, anEmail){
+      let tempArtist = unqfy.getArtistById(artistId);
+      console.log(tempArtist)
+      if (!tempArtist.subscribers.includes(anEmail)){        
+        tempArtist.subscribers.push(anEmail);
+        console.log(tempArtist.subscribers)
+      }
+  }
+
+  unSubscribe(unqfy, artistId, anEmail){
+    let tempArtist = unqfy.getArtistById(artistId);
+    tempArtist.subscribers = tempArtist.subscribers.filter(email => (email != anEmail));
+  }
 }
 
 module.exports = AbmHandler;

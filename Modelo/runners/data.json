@@ -1,0 +1,122 @@
+{
+  "rootObjects": [
+    {
+      "id": "__00001__",
+      "name": null
+    }
+  ],
+  "objects": {
+    "__00001__": {
+      "_artists": "__00002__",
+      "_users": "__00003__",
+      "_playlists": "__00004__",
+      "_abmHandler": "__00005__",
+      "_searcher": "__00006__",
+      "_playlistGenerator": "__00007__",
+      "_userHandler": "__00008__",
+      "_spotifyHelper": "__00009__",
+      "_musixmatchHelper": "__00010__",
+      "listeners": "__00011__"
+    },
+    "__00002__": {
+      "0": "__00012__",
+      "1": "__00013__"
+    },
+    "__00003__": {},
+    "__00004__": {},
+    "__00005__": {
+      "_artistId": 2,
+      "_albumId": 1,
+      "_trackId": 0,
+      "_userId": 0
+    },
+    "__00006__": {},
+    "__00007__": {
+      "_playlistId": 0
+    },
+    "__00008__": {},
+    "__00009__": {
+      "_authToken": "BQAOjoy9WFEBe3D2bhxJ67v0qQJa9QyeHsSZKXqm0cLbNrMUaKkjXRqGzUBhgUD_5vblkihJjkQ10fnCSTevBQBvz2pwXk-5OzszJKYPYTuvh0_RmdSAVnT4_Qik6NFZEyTko8x7h2_0aqTx4_OtXcMHc3dEfFX6"
+    },
+    "__00010__": {
+      "_apikey": "cf4c761b3b9884733988f4f0a0bfe2ad",
+      "_BASE_URL": "http://api.musixmatch.com/ws/1.1/"
+    },
+    "__00011__": {},
+    "__00012__": {
+      "_id": 1,
+      "_name": "La Renga",
+      "_country": "Argentina",
+      "_albums": "__00014__",
+      "_subscribers": "__00015__",
+      "_observers": "__00016__"
+    },
+    "__00013__": {
+      "_id": 2,
+      "_name": "Guns and Roses",
+      "_country": "United States",
+      "_albums": "__00017__",
+      "_subscribers": "__00018__"
+    },
+    "__00014__": {
+      "0": "__00019__"
+    },
+    "__00015__": {},
+    "__00016__": {
+      "0": "__00020__",
+      "1": "__00021__"
+    },
+    "__00017__": {},
+    "__00018__": {
+      "0": "pepe@pepelandia.com.ar"
+    },
+    "__00019__": {
+      "_id": 1,
+      "_name": "Despedazado por mil partes",
+      "_year": 1995,
+      "_tracks": "__00022__",
+      "_artist": "__00012__"
+    },
+    "__00020__": {
+      "_id": 1,
+      "_name": "pepe",
+      "_listenedTracks": "__00023__",
+      "_email": ""
+    },
+    "__00021__": {
+      "_id": 2,
+      "_name": "pipo",
+      "_listenedTracks": "__00024__",
+      "_email": ""
+    },
+    "__00022__": {},
+    "__00023__": {},
+    "__00024__": {}
+  },
+  "types": {
+    "__00001__": "UNQfy",
+    "__00002__": "Array",
+    "__00003__": "Array",
+    "__00004__": "Array",
+    "__00005__": "AbmHandler",
+    "__00006__": "Searcher",
+    "__00007__": "PlaylistGenerator",
+    "__00008__": "UserHandler",
+    "__00009__": "SpotifyHelper",
+    "__00010__": "MusixmatchHelper",
+    "__00011__": "Array",
+    "__00012__": "Artist",
+    "__00013__": "Artist",
+    "__00014__": "Array",
+    "__00015__": "Array",
+    "__00016__": "Array",
+    "__00017__": "Array",
+    "__00018__": "Array",
+    "__00019__": "Album",
+    "__00020__": "User",
+    "__00021__": "User",
+    "__00022__": "Array",
+    "__00023__": "Array",
+    "__00024__": "Array"
+  }
+}
