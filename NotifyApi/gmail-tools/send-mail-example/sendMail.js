@@ -18,14 +18,14 @@ gmailClient.users.messages.send(
 );
 
 
-function createMessage() {
+function createMessage(anEmail) {
     // You can use UTF-8 encoding for the subject using the method below.
     // You can also just use a plain string if you don't need anything fancy.
     const subject = 'Hello';
     const utf8Subject = `=?utf-8?B?${Buffer.from(subject).toString('base64')}?=`;
     const messageParts = [
-      'From: Lautaro Woites <paismarianoa@gmail.com>',
-      'To: Lautaro Woites <paismarianoa@gmail.com>',
+      'From: UNQFy <paismarianoa@gmail.com>',
+      'To: mariano <paismarianoa@gmail.com>',
       'Content-Type: text/html; charset=utf-8',
       'MIME-Version: 1.0',
       `Subject: ${utf8Subject}`,

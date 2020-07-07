@@ -4,19 +4,21 @@ const router    = express.Router();
 const app       = express();
 const rp        = require('request-promise');
 const BASE_URL  = 'http://localhost:8081/api';
+const sendMail  = require('./sendMail.js');
 
 //ENDPOINT POST /api/subscribe
 router.route('/subscribe')
-.post((req, res) => {
+.post((req, res, next) => {
     const data = req.body;
     if (data.artistId === undefined || data.email === undefined){
         next(new LackOfArgumentsException());
+        return;
     }
     const options = {
         uri: BASE_URL + '/artists/' + data.artistId,
         json: true
     };
-    let tmpArtist = rp.get(options)
+    rp.get(options)
         .then(response => {
             const options2 = {
                 uri: BASE_URL + '/artists/notification/subscribe',
@@ -28,66 +30,92 @@ router.route('/subscribe')
             };
             rp.post(options2)
         }).then(response => {
-            res.status(201);
+            res.status(200);
             res.send({
                 success: true
             })
         }).catch(exception => {
-            throw new ArtistNotFoundException();
+            if (exception.error.errorCode === "RESOURCE_NOT_FOUND"){
+                next(new ArtistNotFoundException());
+            }
         })  
 })
 //ENDPOINT POST /api/unsubscribe
 router.route('/unsubscribe')
-.post((req, res) => {
+.post((req, res, next) => {
     const data = req.body;
     if (data.artistId === undefined || data.email === undefined){
         next(new LackOfArgumentsException());
+        return;
     }
     const options = {
-        uri: this._BASE_URL + 'artists/:artistId',
+        uri: BASE_URL + '/artists/' + data.artistId,
         json: true
     };
-    let tmpArtist = rp.get(options);
-
-    if (tmpArtist === undefined) {
-        next(new ArtistNotFoundException());
-    }
-    const options2 = {
-        uri: this._BASE_URL + '/artists/<artistID>/subscribe',
-        json: true
-    }
-    rp.post(options)
-
-    try {
-        
-    }catch(err){
-
-    }
+    rp.get(options)
+        .then(response => {
+            const options2 = {
+                uri: BASE_URL + '/artists/notification/unsubscribe',
+                qs: {
+                    artistId: data.artistId,
+                    email: data.email
+                },
+                json: true
+            };
+            rp.delete(options2);
+        }).then(response => {
+            res.status(200);
+            res.send({
+                success: true
+            })
+        }).catch(exception => {
+            if (exception.error.errorCode === "RESOURCE_NOT_FOUND"){
+                next(new ArtistNotFoundException());
+            }
+        })  
 })
 // ENDPOINT POST /api/notify
 router.route('/notify')
-.post((req, res) => {
+.post((req, res, next) => {
     const data = req.body;
-    let tmpArtist;
-    if (data.name === undefined || data.country === undefined){
-        const err = new BadRequestException();
-        errorHandler(err, req, res);
+    if (data.artistId === undefined || data.subject === undefined || data.message === undefined){
+        next(new LackOfArgumentsException());
         return;
     }
-    try {
-        tmpArtist = unqfy.addArtist(data);
-    }catch(err){
-        errorHandler(err, req, res);
-        return;
-    }
-    console.log("Se guarda Unqfy desde /artists/ POST");
-    saveUNQfy(unqfy);
-    unqfy = getUNQfy();
-    res.status(201);
-    res.json(
-        tmpArtist.toJSON()
-    );
+    const options = {
+        uri: BASE_URL + '/artists/' + data.artistId,
+        json: true
+    };
+    return rp.get(options)
+        .then(response => {
+            const options2 = {
+                uri: BASE_URL + '/artists/notification/subscribers',
+                qs: {
+                    artistId: data.artistId
+                },
+                json: true
+            };
+            return rp.get(options2)
+        }).then(response => {
+            response.emails.forEach(email => {
+                sendMail.sendMessage(email, data.subject, data.message);});
+            res.status(200);
+            res.send({
+                success: true
+            })          
+        }).catch(exception => {
+            if (exception.error.errorCode === "RESOURCE_NOT_FOUND"){
+                next(new ArtistNotFoundException());
+            }else {
+                next(new NotificationFailureException());
+            }
+        })  
 })
+///
+///
+/// FALTA DE ACA PARA ABAJO
+///
+///
 //ENDPOINT GET /api/subscriptions?artistId=<artistID></artistID>
 router.route('/subscriptions?artistId=<artistID></artistID>')
 .get((req, res) => {
@@ -127,6 +155,19 @@ router.route('/subscriptions')
         success: true
     })
 })
+router.route('*')
+.get((req, res, next) => {
+    next(new NoRouteException());
+})
+.post((req, res, next) => {
+    next(new NoRouteException());
+})
+.delete((req, res, next) => {
+    next(new NoRouteException());
+})
+.patch((req, res, next) => {
+    next(new NoRouteException());
+})
 
 const port = 8082;  // set our port
 
@@ -147,44 +188,66 @@ const server = app.listen(port, () => {
 });
 
 function errorHandler(err, req, res, next) {
-    console.error(err); // imprimimos el error en consola
-    // Chequeamos que tipo de error es y actuamos en consecuencia
-    if (err instanceof InvalidInputError){
-      res.status(err.status);
-      res.json({status: err.status, errorCode: err.errorCode});
-    } else if (err.type === 'entity.parse.failed'){
-      // body-parser error para JSON invalido
-      res.status(err.status);
-      res.json({status: err.status, errorCode: 'INVALID_JSON'});
+
+    if (err.type === 'entity.parse.failed'){
+        res.status(err.status);
+        res.json({status: err.status, errorCode: 'INVALID_JSON'});
+    }else if (
+        err instanceof InvalidInputError || 
+        err instanceof NoRouteException ||
+        err instanceof ArtistNotFoundException ||
+        err instanceof LackOfArgumentsException || 
+        err instanceof BadRequestException ||
+        err instanceof NotificationFailureException){
+            res.status(err.status);
+            res.json({status:err.status, errorCode: err.errorCode});
     } else {
-      // continua con el manejador de errores por defecto
-      next(err);
+        res.status(500);
+        res.json({status: 500, errorCode: 'INTERNAL_SERVER_ERROR'});
     }
- }
+}
  
- class APIError extends Error {
+class APIError extends Error {
     constructor(name, statusCode, errorCode, message = null) {
       super(message || name);
       this.name = name;
       this.status = statusCode;
       this.errorCode = errorCode;
     }
- }
+}
  
- class InvalidInputError extends APIError {
+class InvalidInputError extends APIError {
     constructor() {
       super('InvalidInputError', 400, 'INVALID_INPUT_DATA');
     }  
- }
+}
 
- class LackOfArgumentsException extends APIError{
+class LackOfArgumentsException extends APIError{
     constructor(){
-        super('LackOfArgumentsException', 400, 'LACK_OF_ARGUMENTS_EXCEPTION');
+        super('LackOfArgumentsException', 400, 'BAD_REQUEST');
     }
- }
+}
 
- class ArtistNotFoundException extends APIError{
-    constructor(){
-        super('ArtistNotFoundException', 400, 'ARTIST_NOT_FOUND_EXCEPTION');
+class ArtistNotFoundException extends APIError{
+   constructor(){
+        super('ArtistNotFoundException', 404, 'RELATED_RESOURCE_NOT_FOUND');
     }
- }
+}
+
+class BadRequestException extends APIError{
+    constructor(){
+        super('BadRequestException', 400, 'BAD_REQUEST');
+    }
+}
+
+class NotificationFailureException extends APIError{
+    constructor(){
+        super('NotificationFailureException', 500, 'INTERNAL_SERVER_ERROR');
+    }
+}
+
+class NoRouteException extends APIError{
+    constructor(){
+        super('NoRouteException', 404, 'RESOURCE_NOT_FOUND')
+    }
+}
