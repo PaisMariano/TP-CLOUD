@@ -87,8 +87,6 @@ class UNQfy {
   }
 
   //SUBSCRIBE METHODS
-  subscribe(artistId, anEmail){this._abmHandler.subscribe(this, artistId, anEmail);}
-  unsubscribe(artistId, anEmail){this._abmHandler.unsubscribe(this, artistId, anEmail);}
 
   //CUSTOM METHODS:
   populateAlbumsForArtist(artistId) {

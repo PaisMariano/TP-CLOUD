@@ -4,7 +4,6 @@ class Artist {
     this._name = aName;
     this._country = aCountry;
     this._albums = [];
-    this._subscribers = [];
   }
 
   get id() {
@@ -18,9 +17,6 @@ class Artist {
   }
   get albums() {
     return this._albums;
-  }
-  get subscribers(){
-    return this._subscribers;
   }
   set name(aName) {
     return (this._name = aName);

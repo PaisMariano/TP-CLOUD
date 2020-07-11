@@ -77,56 +77,6 @@ artists.route('/artists/:artistId')
         success: true
     })
 })
-
-//ENDPOINT /artists/subscribe
-artists.route('/artists/notification/subscribe')
-.post((req, res) => {
-    const data = req.query;
-    console.log(data)
-    if (data.artistId === undefined){
-        const err = new BadRequestException();
-        errorHandler(err, req, res);
-        return;
-    }
-    try {
-        unqfy.subscribe(parseInt(data.artistId), data.email);
-    }catch(err){
-        errorHandler(err, req, res);
-        return;
-    }
-    console.log("Se guarda Unqfy desde /artists/subscribe POST");
-    saveUNQfy(unqfy);
-    unqfy = getUNQfy();
-    res.status(201);
-    res.send({
-        success: true
-    })
-})
-
-//ENDPOINT /artists/unsubscribe
-artists.route('/artists/notification/unsubscribe')
-.delete((req, res) => {
-    const data = req.body;
-    if (data.artistId === undefined){
-        const err = new BadRequestException();
-        errorHandler(err, req, res);
-        return;
-    }
-    try {
-        tmpArtist = unqfy.unsubscribe(data.artistId, data.email);
-    }catch(err){
-        errorHandler(err, req, res);
-        return;
-    }
-    console.log("Se guarda Unqfy desde /artists/unsubscribe DELETE");
-    saveUNQfy(unqfy);
-    unqfy = getUNQfy();
-    res.status(201);
-    res.send({
-        success: true
-    })
-})
-
 //ENDPOINT /artists/
 artists.route('/artists')
 .get((req, res) => {
