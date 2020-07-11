@@ -2,6 +2,8 @@ const Artist = require('./artist.js');
 const Album = require('./album.js');
 const Track = require('./track.js');
 const User = require('./user.js');
+const ntHelper = require('./external api helpers/notifyHelper.js')
+const notify  = new ntHelper.NotifyHelper();
 const { AlreadyExistsArtistException, AlreadyExistsAlbumException,
   AlreadyExistsTrackException } = require('./exceptions.js');
 
@@ -53,6 +55,11 @@ class AbmHandler {
     );
     tempArtist.albums.push(tempAlbum);
 
+    let subject = "Nuevo album " + albumData.name;
+    let message = "Tu artista " + tempArtist.name + 
+              " publicó su nuevo album " + albumData.name + "!!!";
+    notify.notifySubscribers(artistId, subject, message);
+
     return tempAlbum;
   }
   createTrack(unqfy, albumId, trackData) {
@@ -97,6 +104,8 @@ class AbmHandler {
   }
   deleteArtist(unqfy, artistId) {
     unqfy.getArtistById(artistId);
+    
+    notify.deleteSubscribers(artistId);
 
     this.genericDeleteTracks(
       unqfy,

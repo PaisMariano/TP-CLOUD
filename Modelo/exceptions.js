@@ -89,6 +89,12 @@ class AlreadyExistsPlaylistException extends AlreadyExistsException {
     this.name = 'AlreadyExistsPlaylistException';
   }
 }
+class ExternalApiErrorException extends Error{
+  constructor(artistId){
+    super(artistId);
+    this.name = "ExternalApiErrorException";
+  }
+}
 
 module.exports = {
   NoMatchingAlbumException,
@@ -101,5 +107,6 @@ module.exports = {
   AlreadyExistsTrackException,
   AlreadyExistsPlaylistException,
   MissingArgsInCommand,
-  NoMatchingArtistNameException
+  NoMatchingArtistNameException,
+  ExternalApiErrorException
 };
