@@ -77,7 +77,6 @@ artists.route('/artists/:artistId')
         success: true
     })
 })
-
 //ENDPOINT /artists/
 artists.route('/artists')
 .get((req, res) => {
