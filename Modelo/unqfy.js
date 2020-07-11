@@ -86,6 +86,8 @@ class UNQfy {
       this);
   }
 
+  //SUBSCRIBE METHODS
+
   //CUSTOM METHODS:
   populateAlbumsForArtist(artistId) {
     this._spotifyHelper.populateAlbumsForArtist(this, this.getArtistById(artistId));

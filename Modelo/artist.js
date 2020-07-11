@@ -26,7 +26,7 @@ class Artist {
   }
   set albums(aList) {
     return (this._albums = aList);
-  }
+  }  
 
   toJSON() {
     return {
