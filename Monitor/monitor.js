@@ -1,4 +1,5 @@
-const Service = require('./service.js');
+const Service = require('./service');
+const SlackHelper = require('./external api helpers/slackHelper');
 const axios = require('axios');
 
 const localhostURL = 'http://localhost';
@@ -12,46 +13,49 @@ class Monitor {
         this._intervalId = null;
         // this._services = [new Service(localhostURL+unqfyPort, "UNQfy"), new Service(localhostURL+notificationPort, "Notification"), new Service(localhostURL+loggingPort), "Logging"];
         this._services = [new Service(`${localhostURL}:${unqfyPort}`, "UNQfy")];
+        this._slackHelper = new SlackHelper();
     };
 
-    get services() { return this._services; }
     get isOnline() { return this._isOnline; }
+    get services() { return this._services; }
+    get slackHelper() { return this._slackHelper; }
 
     checkServicesStatus() {
+        const wentOnlineHandler = (service, currentTime) => {
+            if (!service.isOnline) {
+                service.isOnline = true;
+                if (service.isFreshInstance) {
+                    service.isFreshInstance = false;
+                    return;
+                }
+                const wentUpMsg = `[${currentTime}] El servicio ${service.name} ha vuelto a la normalidad`;
+                console.log(wentUpMsg);
+                // this.slackHelper.postMessage(wentUpMsg);
+            }
+        };
+
         return this._services.map(service => {
             axios.get(service.url)
             .then(res => {
-                // console.log("Servicio online");
-                // console.log("rta: ", res);
-                if (!service.isOnline) {
-                    service.isOnline = true;
-                    // mandar por slack que el service se levanto/normalizo
-                    console.log(`Se NORMALIZO el servicio de ${service.name}`);
-                }
+                const currentDatetime = new Date();
+                const currentTime = `${currentDatetime.getHours()}:${currentDatetime.getMinutes()}:${currentDatetime.getSeconds()}:${currentDatetime.getMilliseconds()}`;
+                wentOnlineHandler(service, currentTime);
             })
             .catch(err => {
-                // console.log("Servicio offline");
-                // console.error("error: ", err);
-                // console.error("error response status: ", err.response.status);
+                const currentDatetime = new Date();
+                const currentTime = `${currentDatetime.getHours()}:${currentDatetime.getMinutes()}:${currentDatetime.getSeconds()}:${currentDatetime.getMilliseconds()}`;
                 if (err.response && err.response.status !== 500) {
-                    if (!service.isOnline) {
-                        service.isOnline = true;
-                        if (service.isFreshInstance) {
-                            service.isFreshInstance = false;
-                            return;
-                        }
-                        // mandar por slack que el service se levanto/normalizo
-                        console.log(`Se NORMALIZO el servicio de ${service.name}`);
-                    }
+                    wentOnlineHandler(service, currentTime);
                 } else {
                     if (err.code === "ECONNREFUSED") {
                         if (service.isOnline) {
-                            console.log(`Se CAYO el servicio de ${service.name}`);
                             service.isOnline = false;
-                            // mandar por slack que el service se cayo
+                            const wentDownMsg = `[${currentTime}] El servicio ${service.name} ha dejado de funcionar`;
+                            console.log(wentDownMsg);
+                            // this.slackHelper.postMessage(wentDownMsg);
                         }
                     } else {
-                        console.error(`Fallo de forma inesperada la api del servicio de ${service.name}`);
+                        console.error(`Fallo de forma inesperada la api del servicio ${service.name}`);
                     }
                 }
             });
