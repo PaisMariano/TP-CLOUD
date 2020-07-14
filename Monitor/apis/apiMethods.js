@@ -1,12 +1,15 @@
 const monitor = require('../monitor');
 const express = require('express');
-const monitor  = express.Router();
+const common  = express.Router();
 const other   = express.Router();
 
+monitor.turnOn();
+console.log("encendido forzado");
+
 //ENDPOINT /monitor/
-monitor.route('/monitor/')
+common.route('/monitor/')
 .get((req, res) => {
-    const servicesJson = monitor.checkServicesStatus().map(service => service.toJSON());
+    const servicesJson = monitor.checkServicesStatus.bind(monitor)().map(service => service.toJSON());
     res.status(200);
     res.json(
         {
@@ -27,11 +30,12 @@ monitor.route('/monitor/')
             default:
                 const err = new InvalidInputError();
                 errorHandler(err, req, res);
-                break;
+                return;
         }
     } else {
         const err = new BadRequestException();
         errorHandler(err, req, res);
+        return
     }
     res.status(200);
     res.json({currentStatus: (monitor.isOnline ? "online" : "offline")});
@@ -143,7 +147,7 @@ class NoRouteException extends APIError {
 }
 
 module.exports = {
-    monitor,
+    common,
     other,
     errorHandler,
     BadRequestException

@@ -2,7 +2,7 @@ const bodyParser  = require('body-parser');
 const express     = require('express');        // import express
 const app         = express();                 // define our app using express
 const {
-    monitor,
+    common,
     other,
     errorHandler,
     BadRequestException,
@@ -20,7 +20,7 @@ app.use((req, res, next) => {
         next();
     });
 });
-app.use('/api', monitor);
+app.use('/api', common);
 app.use('*', other);
 const server = app.listen(port, () => {
     console.log("Server running");
@@ -54,10 +54,10 @@ process.on('SIGTERM', () => {
     });
 });
 
-process.on('SIGKILL', () => {
-    server.close(() => {
-        console.log('Process terminated from SIGKILL');
-    });
-});
+// process.on('SIGKILL', () => {
+//     server.close(() => {
+//         console.log('Process terminated from SIGKILL');
+//     });
+// });
 
 console.log("Escuchando en el puerto %d...", port);

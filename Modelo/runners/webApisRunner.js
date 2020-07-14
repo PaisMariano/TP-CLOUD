@@ -58,10 +58,10 @@ process.on('SIGTERM', () => {
     });
 });
 
-process.on('SIGKILL', () => {
-    server.close(() => {
-        console.log('Process terminated from SIGKILL');
-    });
-});
+// process.on('SIGKILL', () => {
+//     server.close(() => {
+//         console.log('Process terminated from SIGKILL');
+//     });
+// });
 
 console.log("Escuchando en el puerto %d...", port);

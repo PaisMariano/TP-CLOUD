@@ -1,8 +1,9 @@
 class Service {
-  constructor(serviceUrln, serviceName) {
+  constructor(serviceUrl, serviceName) {
     this._url = serviceUrl;
     this._name = serviceName;
     this._isOnline = false;
+    this._isFreshInstance = true;
   }
 
   get url() {
@@ -14,6 +15,9 @@ class Service {
   get isOnline() {
     return this._isOnline;
   }
+  get isFreshInstance() {
+    return this._isFreshInstance;
+  }
 
   set url(newUrl) {
     return (this._url = newUrl);
@@ -24,11 +28,14 @@ class Service {
   set isOnline(onlineStatus) {
     return (this._isOnline = onlineStatus);
   }
+  set isFreshInstance(freshStatus) {
+    return (this._isFreshInstance = freshStatus);
+  } 
 
   toJSON() {
     return {
       name: this.name,
-      status: this.isOnline,
+      isOnline: this.isOnline,
       url: this.url,
     };
   }
