@@ -11,9 +11,13 @@ class Monitor {
     constructor() {
         this._isOnline = false;
         this._intervalId = null;
-        // this._services = [new Service(localhostURL+unqfyPort, "UNQfy"), new Service(localhostURL+notificationPort, "Notification"), new Service(localhostURL+loggingPort), "Logging"];
-        this._services = [new Service(`${localhostURL}:${unqfyPort}/api`, "UNQfy")];
+        this._services = [
+            new Service(`${localhostURL}:${unqfyPort}/api`, "UNQfy"),
+            new Service(`${localhostURL}:${notificationPort}/api`, "Notification"),
+            new Service(`${localhostURL}:${loggingPort}/api`, "Logging")
+        ];
         this._slackHelper = new SlackHelper();
+        this.turnOn();
     };
 
     get isOnline() { return this._isOnline; }
@@ -67,7 +71,7 @@ class Monitor {
 
     turnOn() {
         if (!this._isOnline) {
-            this._intervalId = setInterval(this.checkServicesStatus.bind(this), 5000);
+            this._intervalId = setInterval(this.checkServicesStatus.bind(this), 2000);
             this._isOnline = true;
         }
     };

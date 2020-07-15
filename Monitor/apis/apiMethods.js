@@ -3,8 +3,6 @@ const express = require('express');
 const common  = express.Router();
 const other   = express.Router();
 
-monitor.turnOn();
-
 //ENDPOINT /monitor/
 common.route('/monitor/')
 .get((req, res) => {
@@ -44,6 +42,21 @@ common.route('/monitor/')
 
 other.route('*')
 .get((req, res) => {
+    const err = new NoRouteException();
+    errorHandler(err, req, res);
+    return;
+})
+.post((req, res) => {
+    const err = new NoRouteException();
+    errorHandler(err, req, res);
+    return;
+})
+.delete((req, res) => {
+    const err = new NoRouteException();
+    errorHandler(err, req, res);
+    return;
+})
+.patch((req, res) => {
     const err = new NoRouteException();
     errorHandler(err, req, res);
     return;

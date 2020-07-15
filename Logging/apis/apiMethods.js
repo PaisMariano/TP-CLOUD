@@ -1,5 +1,5 @@
 const express = require('express');
-const logger = require('../logger');
+const logger  = require('../logger');
 const common  = express.Router();
 const other   = express.Router();
 
@@ -60,7 +60,22 @@ common.route('/logging/')
 //Estos deberian quedar abajo de todo.
 
 other.route('*')
+.get((req, res) => {
+    const err = new NoRouteException();
+    errorHandler(err, req, res);
+    return;
+})
 .post((req, res) => {
+    const err = new NoRouteException();
+    errorHandler(err, req, res);
+    return;
+})
+.delete((req, res) => {
+    const err = new NoRouteException();
+    errorHandler(err, req, res);
+    return;
+})
+.patch((req, res) => {
     const err = new NoRouteException();
     errorHandler(err, req, res);
     return;
