@@ -22,10 +22,10 @@ app.use((req, res, next) => {
 });
 app.use('/api', common);
 app.use('*', other);
+app.use(errorHandler);
 const server = app.listen(port, () => {
     console.log("Server running");
 });
-app.use(errorHandler);
 
 
 if (process.platform === "win32") {
@@ -47,17 +47,5 @@ process.on("SIGINT", function () {
         process.exit();
     });
 });
-
-process.on('SIGTERM', () => {
-    server.close(() => {
-        console.log('Process terminated from SIGTERM');
-    });
-});
-
-// process.on('SIGKILL', () => {
-//     server.close(() => {
-//         console.log('Process terminated from SIGKILL');
-//     });
-// });
 
 console.log("Escuchando en el puerto %d...", port);

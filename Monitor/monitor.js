@@ -12,7 +12,7 @@ class Monitor {
         this._isOnline = false;
         this._intervalId = null;
         // this._services = [new Service(localhostURL+unqfyPort, "UNQfy"), new Service(localhostURL+notificationPort, "Notification"), new Service(localhostURL+loggingPort), "Logging"];
-        this._services = [new Service(`${localhostURL}:${unqfyPort}`, "UNQfy")];
+        this._services = [new Service(`${localhostURL}:${unqfyPort}/api`, "UNQfy")];
         this._slackHelper = new SlackHelper();
     };
 
@@ -34,16 +34,18 @@ class Monitor {
             }
         };
 
+        const formatTime = date => `${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}:${date.getMilliseconds()}`;
+
         return this._services.map(service => {
             axios.get(service.url)
             .then(res => {
                 const currentDatetime = new Date();
-                const currentTime = `${currentDatetime.getHours()}:${currentDatetime.getMinutes()}:${currentDatetime.getSeconds()}:${currentDatetime.getMilliseconds()}`;
+                const currentTime = formatTime(currentDatetime);
                 wentOnlineHandler(service, currentTime);
             })
             .catch(err => {
                 const currentDatetime = new Date();
-                const currentTime = `${currentDatetime.getHours()}:${currentDatetime.getMinutes()}:${currentDatetime.getSeconds()}:${currentDatetime.getMilliseconds()}`;
+                const currentTime = formatTime(currentDatetime);
                 if (err.response && err.response.status !== 500) {
                     wentOnlineHandler(service, currentTime);
                 } else {

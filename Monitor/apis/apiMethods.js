@@ -4,7 +4,6 @@ const common  = express.Router();
 const other   = express.Router();
 
 monitor.turnOn();
-console.log("encendido forzado");
 
 //ENDPOINT /monitor/
 common.route('/monitor/')
@@ -35,7 +34,7 @@ common.route('/monitor/')
     } else {
         const err = new BadRequestException();
         errorHandler(err, req, res);
-        return
+        return;
     }
     res.status(200);
     res.json({currentStatus: (monitor.isOnline ? "online" : "offline")});
@@ -49,17 +48,7 @@ other.route('*')
     errorHandler(err, req, res);
     return;
 })
-.post((req, res) => {
-    const err = new NoRouteException();
-    errorHandler(err, req, res);
-    return;
-})
-.delete((req, res) => {
-    const err = new NoRouteException();
-    errorHandler(err, req, res);
-    return;
-})
-.patch((req, res) => {
+.put((req, res) => {
     const err = new NoRouteException();
     errorHandler(err, req, res);
     return;
@@ -73,13 +62,6 @@ function errorHandler(err, req, res) {
             res.json({
                 status: 404,
                 errorCode: "RESOURCE_NOT_FOUND"
-            });
-            break;
-        case (err instanceof ResourceNotFoundException):
-            res.status(err.status);
-            res.json({
-                status: err.status,
-                errorCode: err.errorCode
             });
             break;
         case (err instanceof BadRequestException):
@@ -120,11 +102,6 @@ class APIError extends Error {
         this.name = name;
         this.status = statusCode;
         this.errorCode = errorCode;
-    }
-}
-class ResourceNotFoundException extends APIError {
-    constructor() {
-        super('ResourceNotFoundException', 404, 'RELATED_RESOURCE_NOT_FOUND');
     }
 }
 
