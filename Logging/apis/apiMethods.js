@@ -6,11 +6,6 @@ const other   = express.Router();
 //ENDPOINT /logging/
 common.route('/logging/')
 .post((req, res) => {
-    //aca viene el log desde UNQfy
-    // formato del body: {
-    //     level: "INFO",
-    //     message: "Se agrego el Track 'La Razon Que Te Demora' al album 'x' del artista 'La Renga'"
-    // }
     const data = req.body;
     if (data.level === undefined || data.message === undefined) {
         const err = new BadRequestException();
@@ -38,15 +33,15 @@ common.route('/logging/')
         res.json({logged: data});
     }
 })
-.put((req, res) => { //aca se activa/desactiva el servicio de Logging
+.put((req, res) => {
     const data = req.body;
     if (data.hasOwnProperty('setStatus')) {
         switch (data.setStatus) {
             case "on":
-                logger.silent = false; // ver si con esto alcanza
+                logger.silent = false;
                 break;
             case "off":
-                logger.silent = true; // ver si con esto alcanza
+                logger.silent = true;
                 break;
             default:
                 const err = new InvalidInputError();

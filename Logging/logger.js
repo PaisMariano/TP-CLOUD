@@ -1,5 +1,3 @@
-// const Log = require('./log');
-// const LogglyHelper = require('./external api helpers/logglyHelper');
 const { createLogger, format, transports } = require('winston');
 // const {Loggly} = require('winston-loggly-bulk');
 
