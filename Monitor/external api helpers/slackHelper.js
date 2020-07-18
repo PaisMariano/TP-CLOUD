@@ -2,7 +2,7 @@ const axios = require('axios');
 
 class SlackHelper {
     constructor() {
-        this._hookUrl = "https://hooks.slack.com/services/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"
+        this._hookUrl = "https://hooks.slack.com/services/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"
     }
 
     get hookUrl() { return this._hookUrl; }
