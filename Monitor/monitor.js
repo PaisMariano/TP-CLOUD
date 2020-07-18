@@ -34,7 +34,7 @@ class Monitor {
                 }
                 const wentUpMsg = `[${currentTime}] El servicio ${service.name} ha vuelto a la normalidad`;
                 console.log(wentUpMsg);
-                // this.slackHelper.postMessage(wentUpMsg);
+                this.slackHelper.postMessage(wentUpMsg);
             }
         };
 
@@ -58,7 +58,7 @@ class Monitor {
                             service.isOnline = false;
                             const wentDownMsg = `[${currentTime}] El servicio ${service.name} ha dejado de funcionar`;
                             console.log(wentDownMsg);
-                            // this.slackHelper.postMessage(wentDownMsg);
+                            this.slackHelper.postMessage(wentDownMsg);
                         }
                     } else {
                         console.error(`Fallo de forma inesperada la api del servicio ${service.name}`);
@@ -71,7 +71,7 @@ class Monitor {
 
     turnOn() {
         if (!this._isOnline) {
-            this._intervalId = setInterval(this.checkServicesStatus.bind(this), 2000);
+            this._intervalId = setInterval(this.checkServicesStatus.bind(this), 5000);
             this._isOnline = true;
         }
     };
