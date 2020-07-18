@@ -1,0 +1,68 @@
+{
+  "rootObjects": [
+    {
+      "id": "__00001__",
+      "name": null
+    }
+  ],
+  "objects": {
+    "__00001__": {
+      "_artists": "__00002__",
+      "_users": "__00003__",
+      "_playlists": "__00004__",
+      "_abmHandler": "__00005__",
+      "_searcher": "__00006__",
+      "_playlistGenerator": "__00007__",
+      "_userHandler": "__00008__",
+      "_spotifyHelper": "__00009__",
+      "_musixmatchHelper": "__00010__",
+      "listeners": "__00011__"
+    },
+    "__00002__": {
+      "0": "__00012__"
+    },
+    "__00003__": {},
+    "__00004__": {},
+    "__00005__": {
+      "_artistId": 1,
+      "_albumId": 0,
+      "_trackId": 0,
+      "_userId": 0
+    },
+    "__00006__": {},
+    "__00007__": {
+      "_playlistId": 0
+    },
+    "__00008__": {},
+    "__00009__": {
+      "_authToken": "BQAOjoy9WFEBe3D2bhxJ67v0qQJa9QyeHsSZKXqm0cLbNrMUaKkjXRqGzUBhgUD_5vblkihJjkQ10fnCSTevBQBvz2pwXk-5OzszJKYPYTuvh0_RmdSAVnT4_Qik6NFZEyTko8x7h2_0aqTx4_OtXcMHc3dEfFX6"
+    },
+    "__00010__": {
+      "_apikey": "cf4c761b3b9884733988f4f0a0bfe2ad",
+      "_BASE_URL": "http://api.musixmatch.com/ws/1.1/"
+    },
+    "__00011__": {},
+    "__00012__": {
+      "_id": 1,
+      "_name": "Guns and Roses",
+      "_country": "United States",
+      "_albums": "__00013__"
+    },
+    "__00013__": {}
+  },
+  "types": {
+    "__00001__": "UNQfy",
+    "__00002__": "Array",
+    "__00003__": "Array",
+    "__00004__": "Array",
+    "__00005__": "AbmHandler",
+    "__00006__": "Searcher",
+    "__00007__": "PlaylistGenerator",
+    "__00008__": "UserHandler",
+    "__00009__": "SpotifyHelper",
+    "__00010__": "MusixmatchHelper",
+    "__00011__": "Array",
+    "__00012__": "Artist",
+    "__00013__": "Array"
+  }
+}

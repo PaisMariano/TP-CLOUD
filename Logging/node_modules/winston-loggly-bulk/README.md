@@ -1,0 +1,122 @@
+# winston-loggly-bulk
+
+A [Loggly][0] transport for [winston][1].
+
+[![Version npm](https://img.shields.io/npm/v/winston-loggly-bulk.svg?style=flat-square)](https://www.npmjs.com/package/winston-loggly-bulk)[![npm Downloads](https://img.shields.io/npm/dm/winston-loggly-bulk.svg?style=flat-square)](https://www.npmjs.com/package/winston-loggly-bulk)
+
+[![NPM](https://nodei.co/npm/winston-loggly-bulk.png?downloads=true&downloadRank=true)](https://nodei.co/npm/winston-loggly-bulk/)
+
+A client implementation for Loggly in node.js. Check out Loggly's [Node logging documentation](https://www.loggly.com/docs/nodejs-logs/) for more.
+
+## Usage
+
+``` js
+  var winston = require('winston');
+
+  //
+  // Requiring `winston-loggly-bulk` will expose
+  // `winston.transports.Loggly`
+  //
+  var {Loggly} = require('winston-loggly-bulk');
+
+  winston.add(new Loggly({options}));
+```
+
+The Loggly transport is based on [Nodejitsu's][2] [node-loggly][3] implementation of the [Loggly][0] API. If you haven't heard of Loggly before, you should probably read their [value proposition][4]. The Loggly transport takes the following options.
+
+* __subdomain:__ The subdomain of your Loggly account. *[required]*
+* __token:__ The access token (previously inputToken) *[required]*
+* __auth__: The authentication information for your Loggly account.
+* __json:__ If true, messages will be sent to Loggly as JSON.
+* __tags:__ An array of tags to send to loggly.
+* __isBulk:__ If true, sends messages using bulk url
+* __stripColors:__ Strip color codes from the logs before sending
+* __bufferOptions:__ Buffer options has two configurations.
+  - __size:__ Number of logs to be buffered.
+  - __retriesInMilliSeconds:__ Time in milliseconds to retry sending buffered logs. 
+* __timestamp:__ If false, library will not include timestamp in log events. 
+  - __Note:__ Library includes timestamp by default when we do not set timestamp option.
+* __networkErrorsOnConsole:__ The library keep track of different network errors and can log them to console. By default, logging errors on console is disabled and can be enabled easily by setting this parameter's value to `true`. If true, all the network errors will be logged to console.
+
+## Sample Working Code Snippet
+
+``` js
+var winston  = require('winston');
+var { Loggly } = require('winston-loggly-bulk');
+
+winston.add(new Loggly({
+    token: "TOKEN",
+    subdomain: "SUBDOMAIN",
+    tags: ["Winston-NodeJS"],
+    json: true
+}));
+
+winston.log('info', "Hello World from Node.js!");
+```
+
+## Buffer Support
+
+This library has buffer support during temporary network outage. User can configure size of buffer (no. of logs to be stored during network outage).
+
+Add these below configuration in code snippet to override the default values of buffer option  __size__ and __retriesInMilliSeconds__.
+
+``` js
+bufferOptions: {
+  size: 1000,
+  retriesInMilliSeconds: 60 * 1000
+}  
+```
+
+* __Note:__ The default value of buffer size and retries in milliseconds are 500 and 30000 (30 seconds) respectively.
+
+## Flush logs and exit
+
+Our library uses ajax requests to send logs to Loggly, and as ajax requests take time to complete, logs can be lost when process.exit() is called because it forces an immediate exit. To exit gracefully and ensure that the last logs get to Loggly, we created a function called flushLogsAndExit(). It waits for 10 seconds and then calls process.exit() itself. This allows enough time for the logs to be sent to Loggly.
+
+Here is an example of how to use the method:
+
+``` js
+var winston = require('winston');
+var { flushLogsAndExit } = require('winston-loggly-bulk');
+
+winston.log("info", "Hello World from Node.js!");
+flushLogsAndExit();
+```
+
+## Motivation
+
+`tldr;?`: To break the [winston][1] codebase into small modules that work together.
+
+The [winston][1] codebase has been growing significantly with contributions and other logging transports. This is **awesome**. However, taking a ton of additional dependencies just to do something simple like logging to the Console and a File is overkill.
+
+## Installation
+
+``` bash
+  npm install winston-loggly-bulk
+```
+
+Note: If you are using npm version 2, please run the below command:
+
+``` bash
+  npm install winston-loggly-bulk winston
+```
+
+## Run Tests
+
+Written in Jest. Testing that log events are correctly passed on.
+
+``` bash
+  npm test
+```
+
+#### Author: [Charlie Robbins](http://www.github.com/indexzero)
+
+#### Contributors: [Loggly](http://github.com/loggly), [Shweta Jain](http://github.com/shwetajain148),
+
+[0]: http://loggly.com
+[1]: https://github.com/winstonjs/winston
+[2]: http://nodejitsu.com
+[3]: https://github.com/nodejitsu/node-loggly
+[4]: http://www.loggly.com/product/
+[5]: http://vowsjs.org
+[6]: http://npmjs.org
