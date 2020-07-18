@@ -16,17 +16,6 @@ class LoggingHelper {
     };
     rp.post(options);
   }
-  logEventUpdate(message, level) {
-    const options = {
-      uri: this._BASE_URL + '/logging',
-      body: {
-        message: message,
-        level: level
-      },
-      json: true
-    };
-    rp.put(options);
-  }
 }
 
 module.exports = {
