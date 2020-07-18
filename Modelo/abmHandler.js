@@ -2,6 +2,10 @@ const Artist = require('./artist.js');
 const Album = require('./album.js');
 const Track = require('./track.js');
 const User = require('./user.js');
+const ntHelper = require('./external api helpers/notifyHelper.js');
+const notify  = new ntHelper.NotifyHelper();
+const lgHelper = require('./external api helpers/loggingHelper.js');
+const logging  = new lgHelper.LoggingHelper();
 const { AlreadyExistsArtistException, AlreadyExistsAlbumException,
   AlreadyExistsTrackException } = require('./exceptions.js');
 
@@ -36,6 +40,10 @@ class AbmHandler {
     );
     unqfy.artists.push(tempArtist);
 
+    //logging
+    const message = 'Artista creado en UNQfy - Codigo: '+this._artistId+' Nombre: '+artistData.name;
+    logging.logEventPost.bind(logging)(message,'Info');
+
     return tempArtist;
   }
   createAlbum(unqfy, artistId, albumData) {
@@ -52,6 +60,15 @@ class AbmHandler {
       tempArtist
     );
     tempArtist.albums.push(tempAlbum);
+
+    //notify
+    const subject = 'Nuevo album '+albumData.name;
+    const message = 'Tu artista '+tempArtist.name+' publicó su nuevo album '+albumData.name+'!!!';
+    notify.notifySubscribers(artistId, subject, message);
+
+    //logging
+    const logMsg = 'Album creado en UNQfy - Codigo: '+this._albumId+' Nombre: '+albumData.name;
+    logging.logEventPost.bind(logging)(logMsg, 'Info');
 
     return tempAlbum;
   }
@@ -71,32 +88,56 @@ class AbmHandler {
     );
     tempAlbum.tracks.push(tempTrack);
 
+    //logging
+    const message = 'Track creado en UNQfy - Codigo: '+this._trackId+' Nombre: '+trackData.name;
+    logging.logEventPost.bind(logging)(message,'Info');
+
     return tempTrack;
   }
   createUser(unqfy, userData) {
     this._userId = this._userId + 1;
     const tempUser = new User(this._userId, userData.name);
     unqfy.users.push(tempUser);
+
+    //logging
+    const message = 'Usuario creado en UNQfy - Codigo: '+this._userId+' Nombre: '+userData.name;
+    logging.logEventPost.bind(logging)(message,'Info');
+
     return tempUser;
   }
   updateArtist(unqfy, artistId, artistData) {
     const tempArtist = unqfy.getArtistById(artistId);
     tempArtist.name = artistData.name;
     tempArtist.country = artistData.country;
+
+    //logging
+    const message = 'Artista actualizado en UNQfy - Codigo: '+artistId+' Nombre: '+artistData.name;
+    logging.logEventPost.bind(logging)(message,'Info');
   }
   updateAlbum(unqfy, albumId, albumData) {
     const tempAlbum = unqfy.getAlbumById(albumId);
     tempAlbum.name = albumData.name;
     tempAlbum.year = albumData.year;
+    
+    //logging
+    const message = 'Album actualizado en UNQfy - Codigo: '+albumId+' Nombre: '+albumData.name;
+    logging.logEventPost.bind(logging)(message,'Info');
   }
   updateTrack(unqfy, trackId, trackData) {
     const tempTrack = unqfy.getTrackById(trackId);
     tempTrack.name = trackData.name;
     tempTrack.genres = trackData.genres;
     tempTrack.duration = trackData.duration;
+
+    //logging
+    const message = 'Track actualizado en UNQfy - Codigo: '+trackId+' Nombre: '+trackData.name;
+    logging.logEventPost.bind(logging)(message,'Info');
   }
   deleteArtist(unqfy, artistId) {
-    unqfy.getArtistById(artistId);
+    const tmpArtist = unqfy.getArtistById(artistId);
+    
+    //notify
+    notify.deleteSubscribers(artistId);
 
     this.genericDeleteTracks(
       unqfy,
@@ -113,10 +154,14 @@ class AbmHandler {
       'album.artist.id'
     );
     unqfy.artists = unqfy.artists.filter((art) => art.id !== artistId);
+
+    //logging
+    const message = 'Artista borrado en UNQfy - Codigo: '+artistId+' Nombre: '+tmpArtist.name;
+    logging.logEventPost.bind(logging)(message,'Info');
   }
 
   deleteAlbum(unqfy, albumId) {
-    unqfy.getAlbumById(albumId);
+    const tempAlbum = unqfy.getAlbumById(albumId);
 
     this.genericDeleteTracks(
       unqfy,
@@ -130,9 +175,13 @@ class AbmHandler {
       art.albums = art.albums.filter((album) => album.id !== albumId);
       return art;
     });
+
+    //logging
+    const message = 'Album borrado en UNQfy - Codigo: '+albumId+' Nombre: '+tempAlbum.name;
+    logging.logEventPost.bind(logging)(message,'Info');
   }
   deleteTrack(unqfy, trackId) {
-    unqfy.getTrackById(trackId);
+    const tempTrack = unqfy.getTrackById(trackId);
 
     this.genericDeleteTracks(unqfy, trackId, 'users', 'listenedTracks', 'id');
     this.genericDeleteTracks(unqfy, trackId, 'playlists', 'tracks', 'id');
@@ -143,6 +192,10 @@ class AbmHandler {
       });
       return art;
     });
+
+    //logging
+    const message = 'Track borrado en UNQfy - Codigo: '+trackId+' Nombre: '+tempTrack.name;
+    logging.logEventPost.bind(logging)(message,'Info');
   }
   //DELETE GENERICO PARA CUALQUIER LISTA DE UN OBJETO QUE TENGA ID SI ME AGREGAN OTRA LISTA A UNQFY SIRVE
   genericDeleteTracks(unqfy, id, firstList, secondList, props) {
@@ -152,6 +205,9 @@ class AbmHandler {
       });
       return elem;
     });
+
+    //logging
+    // tiene sentido loggear aca?
   }
   //RESUELVE EL STRING PASADO COMO PROPOSICIONES ANIDADAS
   resolveProp(obj, path) {

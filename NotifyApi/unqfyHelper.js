@@ -1,12 +1,12 @@
-const BASE_URL      = 'http://localhost:8081/api';
-const rp            = require('request-promise');
-const { ArtistNotFoundException } = require('./exception.js');
+const rp    = require('request-promise');
 
 class UnqfyHelper{
-    constructor(){}
+    constructor(){
+        this._BASE_URL = 'http://localhost:8081/api';
+    }
     existArtist(artistId){
         const options = {
-            uri: BASE_URL + '/artists/' + artistId,
+            uri: this._BASE_URL + '/artists/' + artistId,
             json: true
         };
         return rp.get(options);

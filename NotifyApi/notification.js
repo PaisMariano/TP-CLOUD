@@ -117,21 +117,15 @@ router.route('/subscriptions')
     if (data.artistId === undefined){
         next(new LackOfArgumentsException());
         return;
-    }
+    }    
     
-    unqfyHelper.existArtist(data.artistId)
-    .then(result => {
-        subscribers.deleteSubscribers(data.artistId);
-        saveNotify(subscribers);
-        subscribers = getNotify();
-        res.status(200);
-        res.send({
-            Body: ""
-        })
-    })
-    .catch(err => (
-        next(new ArtistNotFoundException()))
-    );
+    subscribers.deleteSubscribers(data.artistId);
+    saveNotify(subscribers);
+    subscribers = getNotify();
+    res.status(200);
+    res.send({
+        Body: ""
+    })    
 })
 router.route('*')
 .get((req, res, next) => {
