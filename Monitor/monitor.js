@@ -28,10 +28,10 @@ class Monitor {
         const wentOnlineHandler = (service, currentTime) => {
             if (!service.isOnline) {
                 service.isOnline = true;
-                if (service.isFreshInstance) {
-                    service.isFreshInstance = false;
-                    return;
-                }
+                // if (service.isFreshInstance) {
+                //     service.isFreshInstance = false;
+                //     return;
+                // }
                 const wentUpMsg = `[${currentTime}] El servicio ${service.name} ha vuelto a la normalidad`;
                 console.log(wentUpMsg);
                 this.slackHelper.postMessage(wentUpMsg);
@@ -46,6 +46,7 @@ class Monitor {
                 const currentDatetime = new Date();
                 const currentTime = formatTime(currentDatetime);
                 wentOnlineHandler(service, currentTime);
+                console.log("respuesta ok: ", res);
             })
             .catch(err => {
                 const currentDatetime = new Date();
@@ -53,15 +54,27 @@ class Monitor {
                 if (err.response && err.response.status !== 500) {
                     wentOnlineHandler(service, currentTime);
                 } else {
-                    if (err.code === "ECONNREFUSED") {
-                        if (service.isOnline) {
-                            service.isOnline = false;
-                            const wentDownMsg = `[${currentTime}] El servicio ${service.name} ha dejado de funcionar`;
-                            console.log(wentDownMsg);
-                            this.slackHelper.postMessage(wentDownMsg);
-                        }
+                    if (service.isOnline) {
+                        service.isOnline = false;
+                        const wentDownMsg = `[${currentTime}] El servicio ${service.name} ha dejado de funcionar`;
+                        console.log(wentDownMsg);
+                        this.slackHelper.postMessage(wentDownMsg);
+                    }
+                    if (err.code == "ECONNREFUSED" || err.code == "EHOSTUNREACH" || err.code == "ETIMEDOUT") {
+                        console.log("Error message: ", err.message);
                     } else {
+                        if (err.request) {
+                            console.log("error request: ", err.request);
+                        } else {
+                            console.error("error message: ", err.message);
+                        }
                         console.error(`Fallo de forma inesperada la api del servicio ${service.name}`);
+                        console.error("error: ", err);
+                        console.log("error.response: ", err.response);
+                        console.log("error.response.data: ", err.response.data);
+                        console.log("error.response.status: ", err.response.status);
+                        console.log("error.response.headers: ", err.response.headers);
+                        console.log("error.toJSON(): ", err.toJSON());
                     }
                 }
             });
@@ -71,7 +84,7 @@ class Monitor {
 
     turnOn() {
         if (!this._isOnline) {
-            this._intervalId = setInterval(this.checkServicesStatus.bind(this), 5000);
+            this._intervalId = setInterval(this.checkServicesStatus.bind(this), 10000);
             this._isOnline = true;
         }
     };
